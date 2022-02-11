@@ -140,21 +140,29 @@ class Miku_PP_v3(IStrategy):
         """
         # dataframe normal
         """
-        """
+       
         create_ichimoku(dataframe, conversion_line_period=9, 
                         displacement=26, base_line_periods=26, laggin_span=52)
-        """
+        
         create_ichimoku(dataframe, conversion_line_period=20, 
                         displacement=88, base_line_periods=88, laggin_span=88)
 
         create_ichimoku(dataframe, conversion_line_period=88, 
                         displacement=444, base_line_periods=88, laggin_span=88)
+        
+         create_ichimoku(dataframe, conversion_line_period=100, 
+                        displacement=444, base_line_periods=88, laggin_span=88)
 
         create_ichimoku(dataframe, conversion_line_period=355,
                         displacement=880, base_line_periods=175, laggin_span=175)
+        
+        create_ichimoku(dataframe, conversion_line_period=444,
+                        displacement=880, base_line_periods=175, laggin_span=175)
+        
+        return dataframe
 
 
-        dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
+        #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
 
 
        
@@ -162,7 +170,7 @@ class Miku_PP_v3(IStrategy):
 
         #1m
         dataframe['ichimoku_ok'] = (
-            (dataframe['kijun_sen_355_5m'] >= dataframe['tenkan_sen_355_5m']) &
+            (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
             (dataframe['senkou_a_100'] > dataframe['senkou_b_100']) &
             (dataframe['senkou_a_20'] > dataframe['senkou_b_20']) &
             (dataframe['kijun_sen_20'] > dataframe['tenkan_sen_444']) &
