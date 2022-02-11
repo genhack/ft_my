@@ -60,7 +60,7 @@ def create_ichimoku(dataframe, conversion_line_period, displacement, base_line_p
 
 class Miku_PP_v3(IStrategy):
     # Optimal timeframe for the strategy
-    timeframe = '1m'
+    timeframe = '5m'
 
     # generate signals from the 1h timeframe
     informative_timeframe = '1d'
@@ -146,10 +146,10 @@ class Miku_PP_v3(IStrategy):
                         displacement=444, base_line_periods=88, laggin_span=88)
 
         create_ichimoku(dataframe, conversion_line_period=100,
-                        displacement=120, base_line_periods=120, laggin_span=100)
+                        displacement=644, base_line_periods=100, laggin_span=100)
 
         create_ichimoku(dataframe, conversion_line_period=355,
-                        displacement=880, base_line_periods=175, laggin_span=175)
+                        displacement=770, base_line_periods=190, laggin_span=155)
 
         create_ichimoku(dataframe, conversion_line_period=444,
                         displacement=880, base_line_periods=175, laggin_span=200)
