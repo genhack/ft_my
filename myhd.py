@@ -190,14 +190,14 @@ class Miku_PP_v3(IStrategy):
         (dataframe['pivot_1d'] > dataframe['ema20_5m']) anulo ema20_5m para ver si hace entradas en Dry Run
 
         dataframe['trending_over'] = (
-            (
+            
             (dataframe['senkou_b_444'] > dataframe['close'])
-            )
+            """
             |
             (
             (dataframe['pivot_1d'] > dataframe['close'])
             )
-            
+            """
         ).astype('int')
 
         return dataframe
