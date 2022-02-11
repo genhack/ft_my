@@ -192,12 +192,7 @@ class Miku_PP_v3(IStrategy):
         dataframe['trending_over'] = (
             
             (dataframe['senkou_b_444'] > dataframe['close'])
-            """
-            |
-            (
-            (dataframe['pivot_1d'] > dataframe['close'])
-            )
-            """
+            
         ).astype('int')
 
         return dataframe
