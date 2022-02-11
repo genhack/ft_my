@@ -161,7 +161,7 @@ class Miku_PP_v3(IStrategy):
                         displacement=980, base_line_periods=200, laggin_span=200)
 
 
-        #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
+        #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)as
 
 
        
