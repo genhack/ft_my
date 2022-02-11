@@ -9,7 +9,7 @@ import technical.indicators as ftt
 from freqtrade.exchange import timeframe_to_minutes
 from technical.util import resample_to_interval, resampled_merge
 
-logger = logging.getLogger(__name__)
+
 
 def pivots_points(dataframe: pd.DataFrame, timeperiod=1, levels=4) -> pd.DataFrame:
 
@@ -187,7 +187,7 @@ class Miku_PP_v3(IStrategy):
          """
 
 
-        (dataframe['pivot_1d'] > dataframe['ema20_5m']) 
+        #(dataframe['pivot_1d'] > dataframe['ema20_5m']) 
 
         dataframe['trending_over'] = (
             
