@@ -10,9 +10,7 @@ from freqtrade.exchange import timeframe_to_minutes
 from technical.util import resample_to_interval, resampled_merge
 
 
-
 def pivots_points(dataframe: pd.DataFrame, timeperiod=1, levels=4) -> pd.DataFrame:
-
     data = {}
 
     low = qtpylib.rolling_mean(
@@ -26,13 +24,10 @@ def pivots_points(dataframe: pd.DataFrame, timeperiod=1, levels=4) -> pd.DataFra
     # Pivot
     data["pivot"] = qtpylib.rolling_mean(series=qtpylib.typical_price(dataframe), window=timeperiod)
 
-    
     data["r1"] = data['pivot'] + 0.382 * (high - low)
 
     data["rS1"] = data['pivot'] + 0.0955 * (high - low)
 
-
-   
     data["s1"] = data["pivot"] - 0.382 * (high - low)
 
     # Calculate Resistances and Supports >1
@@ -64,7 +59,6 @@ def create_ichimoku(dataframe, conversion_line_period, displacement, base_line_p
 
 
 class Miku_PP_v3(IStrategy):
-    
     # Optimal timeframe for the strategy
     timeframe = '1m'
 
@@ -84,7 +78,7 @@ class Miku_PP_v3(IStrategy):
     minimal_roi = {
         "0": 10,
     }
-    
+
     plot_config = {
         'main_plot': {
             'pivot_1d': {'color': 'blue'},
@@ -141,44 +135,41 @@ class Miku_PP_v3(IStrategy):
         """
         # dataframe normal
         """
-       
-        create_ichimoku(dataframe, conversion_line_period=9, 
+
+        create_ichimoku(dataframe, conversion_line_period=9,
                         displacement=26, base_line_periods=26, laggin_span=52)
-        
-        create_ichimoku(dataframe, conversion_line_period=20, 
+
+        create_ichimoku(dataframe, conversion_line_period=20,
                         displacement=88, base_line_periods=88, laggin_span=88)
 
-        create_ichimoku(dataframe, conversion_line_period=88, 
+        create_ichimoku(dataframe, conversion_line_period=88,
                         displacement=444, base_line_periods=88, laggin_span=88)
-        
-        create_ichimoku(dataframe, conversion_line_period=100, 
+
+        create_ichimoku(dataframe, conversion_line_period=100,
                         displacement=500, base_line_periods=200, laggin_span=100)
 
         create_ichimoku(dataframe, conversion_line_period=355,
                         displacement=880, base_line_periods=175, laggin_span=175)
-        
+
         create_ichimoku(dataframe, conversion_line_period=444,
                         displacement=980, base_line_periods=200, laggin_span=200)
 
+        # dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)as
 
-        #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)as
+        # Notes: Start Trading
 
-
-       
-        #Notes: Start Trading
-
-        #1m
+        # 1m
         dataframe['ichimoku_ok'] = (
-            (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
-            (dataframe['senkou_a_100'] > dataframe['senkou_b_100']) &
-            (dataframe['senkou_a_20'] > dataframe['senkou_b_20']) &
-            (dataframe['kijun_sen_20'] > dataframe['tenkan_sen_444']) &
-            (dataframe['senkou_a_9'] > dataframe['senkou_a_20']) &
-            (dataframe['tenkan_sen_20'] >= dataframe['kijun_sen_20']) &
-            (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
-            (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
+                (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
+                (dataframe['senkou_a_100'] > dataframe['senkou_b_100']) &
+                (dataframe['senkou_a_20'] > dataframe['senkou_b_20']) &
+                (dataframe['kijun_sen_20'] > dataframe['tenkan_sen_444']) &
+                (dataframe['senkou_a_9'] > dataframe['senkou_a_20']) &
+                (dataframe['tenkan_sen_20'] >= dataframe['kijun_sen_20']) &
+                (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
+                (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
         ).astype('int')
-        
+
         """        * En 5m
         dataframe['ichimoku_ok'] = (
             (dataframe['close'] > dataframe['pivot_1d']) &
@@ -193,17 +184,16 @@ class Miku_PP_v3(IStrategy):
         ).astype('int')
          """
 
-
-        #(dataframe['pivot_1d'] > dataframe['ema20_5m']) 
+        # (dataframe['pivot_1d'] > dataframe['ema20_5m'])
 
         dataframe['trending_over'] = (
-            
+
             (dataframe['senkou_b_444'] > dataframe['close'])
-            
+
         ).astype('int')
 
         return dataframe
-    
+
         """
 
         # Start Trading
@@ -215,17 +205,17 @@ class Miku_PP_v3(IStrategy):
             (dataframe['senkou_a_20'] > dataframe['senkou_b_20'])
         ).astype('int')        
 
-        
+
         dataframe['trending_over'] = (
-            
+
             (dataframe['senkou_b_88'] > dataframe['close'])
-            
+
         ).astype('int')
 
         return dataframe
-        
+
         """
-        
+
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
 
         dataframe = self.slow_tf_indicators(dataframe, metadata)
