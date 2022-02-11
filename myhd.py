@@ -1,12 +1,8 @@
-
-# --- Do not remove these libs ---
 from freqtrade.strategy import IStrategy, merge_informative_pair
 from pandas import DataFrame
 import talib.abstract as ta
 import logging
 import freqtrade.vendor.qtpylib.indicators as qtpylib
-
-# --------------------------------
 import pandas as pd
 import numpy as np
 import technical.indicators as ftt
@@ -16,23 +12,6 @@ from technical.util import resample_to_interval, resampled_merge
 logger = logging.getLogger(__name__)
 
 def pivots_points(dataframe: pd.DataFrame, timeperiod=1, levels=4) -> pd.DataFrame:
-    """
-    Pivots Points
-    https://www.tradingview.com/support/solutions/43000521824-pivot-points-standard/
-    Formula:
-    Pivot = (Previous High + Previous Low + Previous Close)/3
-    Resistance #1 = (2 x Pivot) - Previous Low
-    Support #1 = (2 x Pivot) - Previous High
-    Resistance #2 = (Pivot - Support #1) + Resistance #1
-    Support #2 = Pivot - (Resistance #1 - Support #1)
-    Resistance #3 = (Pivot - Support #2) + Resistance #2
-    Support #3 = Pivot - (Resistance #2 - Support #2)
-    ...
-    :param dataframe:
-    :param timeperiod: Period to compare (in ticker)
-    :param levels: Num of support/resistance desired
-    :return: dataframe
-    """
 
     data = {}
 
@@ -47,17 +26,13 @@ def pivots_points(dataframe: pd.DataFrame, timeperiod=1, levels=4) -> pd.DataFra
     # Pivot
     data["pivot"] = qtpylib.rolling_mean(series=qtpylib.typical_price(dataframe), window=timeperiod)
 
-    # Resistance #1
-    # data["r1"] = (2 * data["pivot"]) - low ... Standard
-    # R1 = PP + 0.382 * (HIGHprev - LOWprev) ... fibonacci
+    
     data["r1"] = data['pivot'] + 0.382 * (high - low)
 
     data["rS1"] = data['pivot'] + 0.0955 * (high - low)
 
 
-    # Resistance #2
-    # data["s1"] = (2 * data["pivot"]) - high ... Standard
-    # S1 = PP - 0.382 * (HIGHprev - LOWprev) ... fibonacci
+   
     data["s1"] = data["pivot"] - 0.382 * (high - low)
 
     # Calculate Resistances and Supports >1
@@ -88,17 +63,9 @@ def create_ichimoku(dataframe, conversion_line_period, displacement, base_line_p
 
 
 class Miku_PP_v3(IStrategy):
-    """
-     Miku_PP_v3
-     La base de la Estrategia es: Miku_PP_v2 y Miku_1m_5m_CSen44_1_5m
     
-    Provando en:
-     Miku_1m_5m_CSen444v2_N_1_5
-     SymphonIK
-    """
-
     # Optimal timeframe for the strategy
-    timeframe = '5m'
+    timeframe = '1m'
 
     # generate signals from the 1h timeframe
     informative_timeframe = '1d'
@@ -190,10 +157,10 @@ class Miku_PP_v3(IStrategy):
         dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
 
 
-        """
-        Notes: Start Trading
+       
+        #Notes: Start Trading
 
-        * En 1m
+        #1m
         dataframe['ichimoku_ok'] = (
             (dataframe['kijun_sen_355_5m'] >= dataframe['tenkan_sen_355_5m']) &
             (dataframe['senkou_a_100'] > dataframe['senkou_b_100']) &
@@ -204,8 +171,8 @@ class Miku_PP_v3(IStrategy):
             (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
             (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
         ).astype('int')
-
-        * En 5m
+        
+        """        * En 5m
         dataframe['ichimoku_ok'] = (
             (dataframe['close'] > dataframe['pivot_1d']) &
             (dataframe['r1_1d'] > dataframe['close']) &
@@ -217,6 +184,7 @@ class Miku_PP_v3(IStrategy):
             (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
             (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
         ).astype('int')
+         """
 
 
             (dataframe['pivot_1d'] > dataframe['ema20_5m']) anulo ema20_5m para ver si hace entradas en Dry Run
@@ -233,6 +201,7 @@ class Miku_PP_v3(IStrategy):
         ).astype('int')
 
         return dataframe
+    
         """
 
         # Start Trading
@@ -253,7 +222,8 @@ class Miku_PP_v3(IStrategy):
 
         return dataframe
         
-
+        """
+        
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
 
         dataframe = self.slow_tf_indicators(dataframe, metadata)
@@ -264,7 +234,7 @@ class Miku_PP_v3(IStrategy):
 
         dataframe.loc[
             (
-                (dataframe['pivots_ok'] > 0)
+                (dataframe['ichimoku_ok'] > 0)
             ), 'buy'] = 1
         return dataframe
 
