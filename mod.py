@@ -146,7 +146,7 @@ class Miku_PP_v3(IStrategy):
                         displacement=444, base_line_periods=88, laggin_span=88)
 
         create_ichimoku(dataframe, conversion_line_period=100,
-                        displacement=444, base_line_periods=100, laggin_span=100)
+                        displacement=544, base_line_periods=100, laggin_span=100)
 
         create_ichimoku(dataframe, conversion_line_period=355,
                         displacement=770, base_line_periods=355, laggin_span=355)
