@@ -60,6 +60,8 @@ def create_ichimoku(dataframe, conversion_line_period, displacement, base_line_p
     dataframe[f'kijun_sen_{conversion_line_period}'] = ichimoku['kijun_sen']
     dataframe[f'senkou_a_{conversion_line_period}'] = ichimoku['senkou_span_a']
     dataframe[f'senkou_b_{conversion_line_period}'] = ichimoku['senkou_span_b']
+    
+    return dataframe
 
 
 class Miku_PP_v3(IStrategy):
@@ -158,8 +160,6 @@ class Miku_PP_v3(IStrategy):
         
         create_ichimoku(dataframe, conversion_line_period=444,
                         displacement=880, base_line_periods=175, laggin_span=175)
-        
-        return dataframe
 
 
         #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
