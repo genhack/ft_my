@@ -85,6 +85,7 @@ def create_ichimoku(dataframe, conversion_line_period, displacement, base_line_p
     dataframe[f'kijun_sen_{conversion_line_period}'] = ichimoku['kijun_sen']
     dataframe[f'senkou_a_{conversion_line_period}'] = ichimoku['senkou_span_a']
     dataframe[f'senkou_b_{conversion_line_period}'] = ichimoku['senkou_span_b']
+    return dataframe
 
 
 class Miku_PP_v3(IStrategy):
