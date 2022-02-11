@@ -86,11 +86,11 @@ class Miku_PP_v3(IStrategy):
     
     plot_config = {
         'main_plot': {
-            'pivot_1d': {},
-            'rS1_1d': {},
-            'r1_1d': {},
-            's1_1d': {},
-            'senkou_b_88': {},
+            'pivot_1d': {'color': 'blue'},
+            'rS1_1d': {'color': 'orange'},
+            'r1_1d': {'color': 'green'},
+            's1_1d': {'color': 'red'},
+            'senkou_b_88': {'color': 'violet'},
         },
         'subplots': {
             'MACD': {
