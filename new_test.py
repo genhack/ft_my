@@ -160,7 +160,7 @@ class Miku_PP_v3(IStrategy):
         #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
 
         dataframe['ichimoku_ok'] = (
-            (dataframe['kijun_sen_355_5m'] >= dataframe['tenkan_sen_355_5m']) &
+            (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
             (dataframe['senkou_a_100'] > dataframe['senkou_b_100']) &
             (dataframe['senkou_a_20'] > dataframe['senkou_b_20']) &
             (dataframe['kijun_sen_20'] > dataframe['tenkan_sen_444']) &
