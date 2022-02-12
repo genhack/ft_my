@@ -1,14 +1,3 @@
-# --- Do not remove these libs ---
-import numpy as np  # noqa
-import pandas as pd  # noqa
-from pandas import DataFrame
-#import xgboost
-import catboost
-import sklearn
-import pickle
-from numba import jit
-from scipy import signal
-
 from freqtrade.strategy import IStrategy
 import technical.indicators as ftt
 # --------------------------------
