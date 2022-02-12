@@ -175,24 +175,9 @@ class Miku_PP_v3(IStrategy):
         return dataframe
       
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-
-        if self.timeframe == self.informative_timeframe:
-            dataframe = self.slow_tf_indicators(dataframe, metadata)
-        else:
-            assert self.dp, "DataProvider is required for multiple timeframes."
-
-            informative = self.dp.get_pair_dataframe(pair=metadata['pair'], timeframe=self.informative_timeframe)
-            informative = self.slow_tf_indicators(informative.copy(), metadata)
-
-            dataframe = merge_informative_pair(dataframe, informative, self.timeframe, self.informative_timeframe, ffill=True)
-            # don't overwrite the base dataframe's OHLCV information
-            skip_columns = [(s + "_" + self.informative_timeframe) for s in
-                            ['date', 'open', 'high', 'low', 'close', 'volume']]
-            dataframe.rename(columns=lambda s: s.replace("_{}".format(self.informative_timeframe), "") if (
-                not s in skip_columns) else s, inplace=True)
-
-        dataframe = self.fast_tf_indicators(dataframe, metadata)
-
+      
+        dataframe = self.slow_tf_indicators(dataframe, metadata)
+      
         return dataframe
 
     def populate_buy_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
