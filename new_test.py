@@ -170,6 +170,10 @@ class Miku_PP_v3(IStrategy):
         ).astype('int') * 1
         return dataframe
    
+    def fast_tf_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        # none atm
+        return dataframe
+      
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
 
         if self.timeframe == self.informative_timeframe:
