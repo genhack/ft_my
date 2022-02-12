@@ -15,7 +15,23 @@ from technical.util import resample_to_interval, resampled_merge
 logger = logging.getLogger(__name__)
 
 def pivots_points(dataframe: pd.DataFrame, timeperiod=1, levels=4) -> pd.DataFrame:
-   
+    """
+    Pivots Points
+    https://www.tradingview.com/support/solutions/43000521824-pivot-points-standard/
+    Formula:
+    Pivot = (Previous High + Previous Low + Previous Close)/3
+    Resistance #1 = (2 x Pivot) - Previous Low
+    Support #1 = (2 x Pivot) - Previous High
+    Resistance #2 = (Pivot - Support #1) + Resistance #1
+    Support #2 = Pivot - (Resistance #1 - Support #1)
+    Resistance #3 = (Pivot - Support #2) + Resistance #2
+    Support #3 = Pivot - (Resistance #2 - Support #2)
+    ...
+    :param dataframe:
+    :param timeperiod: Period to compare (in ticker)
+    :param levels: Num of support/resistance desired
+    :return: dataframe
+    """
 
     data = {}
 
@@ -82,7 +98,7 @@ class Miku_PP_v3(IStrategy):
     """
 
     # Optimal timeframe for the strategy
-    timeframe = '1h'
+    timeframe = '5m'
 
     # generate signals from the 1h timeframe
     informative_timeframe = '1d'
@@ -103,11 +119,11 @@ class Miku_PP_v3(IStrategy):
     
     plot_config = {
         'main_plot': {
-            'pivot_1d': {'color': 'blue'},
-            'rS1_1d': {'color': 'orange'},
-            'r1_1d': {'color': 'green'},
-            's1_1d': {'color': 'red'},
-            'senkou_b_88': {'color': 'violet'},
+            'pivot_1d': {},
+            'rS1_1d': {},
+            'r1_1d': {},
+            's1_1d': {},
+            'senkou_b_88': {},
         },
         'subplots': {
             'MACD': {
@@ -157,10 +173,10 @@ class Miku_PP_v3(IStrategy):
         """
         # dataframe normal
         """
-       
+        """
         create_ichimoku(dataframe, conversion_line_period=9, 
                         displacement=26, base_line_periods=26, laggin_span=52)
-        
+        """
         create_ichimoku(dataframe, conversion_line_period=20, 
                         displacement=88, base_line_periods=88, laggin_span=88)
 
@@ -169,12 +185,9 @@ class Miku_PP_v3(IStrategy):
 
         create_ichimoku(dataframe, conversion_line_period=355,
                         displacement=880, base_line_periods=175, laggin_span=175)
-      
-        create_ichimoku(dataframe, conversion_line_period=444,
-                        displacement=880, base_line_periods=200, laggin_span=200)
 
 
-        #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
+        dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
 
 
         """
@@ -190,8 +203,7 @@ class Miku_PP_v3(IStrategy):
             (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
             (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
         ).astype('int')
-         """
-        #Better
+        * En 5m
         dataframe['ichimoku_ok'] = (
             (dataframe['close'] > dataframe['pivot_1d']) &
             (dataframe['r1_1d'] > dataframe['close']) &
@@ -201,17 +213,43 @@ class Miku_PP_v3(IStrategy):
             (dataframe['senkou_a_9'] > dataframe['senkou_a_20']) &
             (dataframe['tenkan_sen_20'] >= dataframe['kijun_sen_20']) &
             (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
-            (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9']) 
+            (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
         ).astype('int')
-         
-        dataframe['sell_fun'] = (
-            (dataframe['senkou_b_444'] > dataframe['close']) 
-        ).astype('int')
+            (dataframe['pivot_1d'] > dataframe['ema20_5m']) anulo ema20_5m para ver si hace entradas en Dry Run
+        dataframe['trending_over'] = (
+            (
+            (dataframe['senkou_b_444'] > dataframe['close'])
+            )
+            |
+            (
+            (dataframe['pivot_1d'] > dataframe['close'])
+            )
             
+        ).astype('int')
         return dataframe
-       
+        """
+
+        # Start Trading
+
+        dataframe['pivots_ok'] = (
+            (dataframe['close'] > dataframe['pivot_1d']) &
+            (dataframe['rS1_1d'] > dataframe['close']) &
+            (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
+            (dataframe['senkou_a_20'] > dataframe['senkou_b_20'])
+        ).astype('int')        
+
+        
+        dataframe['trending_over'] = (
+            
+            (dataframe['senkou_b_88'] > dataframe['close'])
+            
+        ).astype('int')
+
+        return dataframe
+        
+
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-      
+
         dataframe = self.slow_tf_indicators(dataframe, metadata)
 
         return dataframe
@@ -220,13 +258,13 @@ class Miku_PP_v3(IStrategy):
 
         dataframe.loc[
             (
-                (dataframe['ichimoku_ok'] > 0)
+                (dataframe['pivots_ok'] > 0)
             ), 'buy'] = 1
         return dataframe
 
     def populate_sell_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
             (
-                (dataframe['sell_fun'] > 0)
+                (dataframe['trending_over'] > 0)
             ), 'sell'] = 1
         return dataframe
