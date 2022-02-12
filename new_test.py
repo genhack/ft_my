@@ -15,24 +15,7 @@ from technical.util import resample_to_interval, resampled_merge
 logger = logging.getLogger(__name__)
 
 def pivots_points(dataframe: pd.DataFrame, timeperiod=1, levels=4) -> pd.DataFrame:
-    """
-    Pivots Points
-    https://www.tradingview.com/support/solutions/43000521824-pivot-points-standard/
-    Formula:
-    Pivot = (Previous High + Previous Low + Previous Close)/3
-    Resistance #1 = (2 x Pivot) - Previous Low
-    Support #1 = (2 x Pivot) - Previous High
-    Resistance #2 = (Pivot - Support #1) + Resistance #1
-    Support #2 = Pivot - (Resistance #1 - Support #1)
-    Resistance #3 = (Pivot - Support #2) + Resistance #2
-    Support #3 = Pivot - (Resistance #2 - Support #2)
-    ...
-    :param dataframe:
-    :param timeperiod: Period to compare (in ticker)
-    :param levels: Num of support/resistance desired
-    :return: dataframe
-    """
-
+   
     data = {}
 
     low = qtpylib.rolling_mean(
@@ -142,22 +125,20 @@ class Miku_PP_v3(IStrategy):
 
     def informative_pairs(self):
         pairs = self.dp.current_whitelist()
-        informative_pairs = [(pair, self.informative_timeframe)
-                             for pair in pairs]
+        informative_pairs = [(pair, self.informative_timeframe) for pair in pairs]
         if self.dp:
             for pair in pairs:
                 informative_pairs += [(pair, "1d")]
-
         return informative_pairs
 
     def slow_tf_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
 
         """
-        # dataframe "1d"
+        # dataframe "1d, 5m"
         """
 
-        dataframe1d = self.dp.get_pair_dataframe(
-            pair=metadata['pair'], timeframe="1d")
+        dataframe1d = self.dp.get_pair_dataframe(pair=metadata['pair'], timeframe="1d")
+        #dataframe5m = self.dp.get_pair_dataframe(pair=metadata['pair'], timeframe="5m")
 
         # Pivots Points
         pp = pivots_points(dataframe1d)
@@ -166,31 +147,19 @@ class Miku_PP_v3(IStrategy):
         dataframe1d['s1'] = pp['s1']
         dataframe1d['rS1'] = pp['rS1']
         # Pivots Points
-
-        dataframe = merge_informative_pair(
-            dataframe, dataframe1d, self.timeframe, "1d", ffill=True)
+        dataframe = merge_informative_pair(dataframe, dataframe1d, self.timeframe, "1d", ffill=True)
 
         """
         # dataframe normal
         """
-        """
-        create_ichimoku(dataframe, conversion_line_period=9, 
-                        displacement=26, base_line_periods=26, laggin_span=52)
-        """
-        create_ichimoku(dataframe, conversion_line_period=20, 
-                        displacement=88, base_line_periods=88, laggin_span=88)
-
-        create_ichimoku(dataframe, conversion_line_period=88, 
-                        displacement=444, base_line_periods=88, laggin_span=88)
-
-        create_ichimoku(dataframe, conversion_line_period=355,
-                        displacement=880, base_line_periods=175, laggin_span=175)
+        
+        create_ichimoku(dataframe, conversion_line_period=9, displacement=26, base_line_periods=26, laggin_span=52)    
+        create_ichimoku(dataframe, conversion_line_period=20, displacement=88, base_line_periods=88, laggin_span=88)
+        create_ichimoku(dataframe, conversion_line_period=88, displacement=444, base_line_periods=88, laggin_span=88)
+        create_ichimoku(dataframe, conversion_line_period=355, displacement=880, base_line_periods=175, laggin_span=175)
+        #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
 
 
-        dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
-
-
-        """
         Notes: Start Trading
         * En 1m
         dataframe['ichimoku_ok'] = (
@@ -203,6 +172,9 @@ class Miku_PP_v3(IStrategy):
             (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
             (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
         ).astype('int')
+        
+        
+        """
         * En 5m
         dataframe['ichimoku_ok'] = (
             (dataframe['close'] > dataframe['pivot_1d']) &
@@ -216,21 +188,18 @@ class Miku_PP_v3(IStrategy):
             (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
         ).astype('int')
             (dataframe['pivot_1d'] > dataframe['ema20_5m']) anulo ema20_5m para ver si hace entradas en Dry Run
-        dataframe['trending_over'] = (
-            (
-            (dataframe['senkou_b_444'] > dataframe['close'])
-            )
-            |
-            (
-            (dataframe['pivot_1d'] > dataframe['close'])
-            )
-            
-        ).astype('int')
-        return dataframe
+       
         """
+        
+       dataframe['trending_over'] = (
+            (dataframe['senkou_b_444'] > dataframe['close'])   
+        ).astype('int') * 1
+        return dataframe
+       
 
         # Start Trading
 
+        """
         dataframe['pivots_ok'] = (
             (dataframe['close'] > dataframe['pivot_1d']) &
             (dataframe['rS1_1d'] > dataframe['close']) &
@@ -247,24 +216,39 @@ class Miku_PP_v3(IStrategy):
 
         return dataframe
         
+        """
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
 
-        dataframe = self.slow_tf_indicators(dataframe, metadata)
+        if self.timeframe == self.informative_timeframe:
+            dataframe = self.slow_tf_indicators(dataframe, metadata)
+        else:
+            assert self.dp, "DataProvider is required for multiple timeframes."
+
+            informative = self.dp.get_pair_dataframe(pair=metadata['pair'], timeframe=self.informative_timeframe)
+            informative = self.slow_tf_indicators(informative.copy(), metadata)
+
+            dataframe = merge_informative_pair(dataframe, informative, self.timeframe, self.informative_timeframe,
+                                               ffill=True)
+            # don't overwrite the base dataframe's OHLCV information
+            skip_columns = [(s + "_" + self.informative_timeframe) for s in
+                            ['date', 'open', 'high', 'low', 'close', 'volume']]
+            dataframe.rename(columns=lambda s: s.replace("_{}".format(self.informative_timeframe), "") if (
+                not s in skip_columns) else s, inplace=True)
+
+        dataframe = self.fast_tf_indicators(dataframe, metadata)
 
         return dataframe
 
     def populate_buy_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-
         dataframe.loc[
-            (
-                (dataframe['pivots_ok'] > 0)
-            ), 'buy'] = 1
+            (dataframe['ichimoku_ok'] > 0)
+            & (dataframe['trending_over'] <= 0)
+            , 'buy'] = 1
         return dataframe
 
     def populate_sell_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
-            (
-                (dataframe['trending_over'] > 0)
-            ), 'sell'] = 1
+            (dataframe['trending_over'] > 0)
+            , 'sell'] = 1
         return dataframe
