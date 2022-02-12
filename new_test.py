@@ -201,12 +201,10 @@ class Miku_PP_v3(IStrategy):
             (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
         ).astype('int')
         
-       # (dataframe['pivot_1d'] > dataframe['ema20_5m']) 
       
         dataframe['trending_over'] = (
-            (
-            (dataframe['pivot_1d'] > dataframe['close'])
-            )
+            (dataframe['pivot_1d'] > dataframe['close']) &
+            (dataframe['pivot_1d'] > dataframe['ema20_5m']) 
         ).astype('int')
         return dataframe
        
