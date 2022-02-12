@@ -193,7 +193,7 @@ class Miku_PP_v3(IStrategy):
          """
         #Better
         dataframe['ichimoku_ok'] = (
-            (dataframe['close'] > dataframe['pivot']) &
+            (dataframe['close'] > dataframe['pivot_1d']) &
             (dataframe['r1_1d'] > dataframe['close']) &
             (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
             (dataframe['senkou_a_20'] > dataframe['senkou_b_20']) &
@@ -202,12 +202,12 @@ class Miku_PP_v3(IStrategy):
             (dataframe['tenkan_sen_20'] >= dataframe['kijun_sen_20']) &
             (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
             (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
-            #(dataframe['pivot'] > dataframe['ema20']) # ema20_5m Buy checker in Dry Run
+            (dataframe['pivot_1d'] > dataframe['ema20']) # ema20_5m Buy checker in Dry Run
         ).astype('int')
          
         
         dataframe['sell_fun'] = (
-            (dataframe['senkou_b_444'] > dataframe['close'])
+            (dataframe['senkou_b_444'] > dataframe['close']) 
         ).astype('int')
             
         return dataframe
