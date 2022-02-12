@@ -202,7 +202,7 @@ class Miku_PP_v3(IStrategy):
             (dataframe['tenkan_sen_20'] >= dataframe['kijun_sen_20']) &
             (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
             (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
-            (dataframe['pivot'] > dataframe['ema20']) # ema20_5m Buy checker in Dry Run
+            #(dataframe['pivot'] > dataframe['ema20']) # ema20_5m Buy checker in Dry Run
         ).astype('int')
          
         
@@ -213,7 +213,7 @@ class Miku_PP_v3(IStrategy):
         return dataframe
        
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-
+      
         dataframe = self.slow_tf_indicators(dataframe, metadata)
 
         return dataframe
