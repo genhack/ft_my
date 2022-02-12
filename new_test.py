@@ -174,7 +174,7 @@ class Miku_PP_v3(IStrategy):
                         displacement=880, base_line_periods=200, laggin_span=200)
 
 
-        #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
+        dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
 
 
         """
@@ -193,8 +193,8 @@ class Miku_PP_v3(IStrategy):
          """
         #Better
         dataframe['ichimoku_ok'] = (
-            #(dataframe['close'] > dataframe['pivot_1d']) &
-            #(dataframe['r1_1d'] > dataframe['close']) &
+            (dataframe['close'] > dataframe['pivot']) &
+            (dataframe['r1_1d'] > dataframe['close']) &
             (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
             (dataframe['senkou_a_20'] > dataframe['senkou_b_20']) &
             (dataframe['kijun_sen_20'] > dataframe['tenkan_sen_88']) &
@@ -203,11 +203,11 @@ class Miku_PP_v3(IStrategy):
             (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
             (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
         ).astype('int')
+         
+        (dataframe['pivot'] > dataframe['ema20']) # ema20_5m Buy checker in Dry Run
         
-      
-        dataframe['trending_over'] = (
-            (dataframe['senkou_b_444'] > dataframe['close'])
-        ).astype('int')
+         dataframe['sell_fun'] = (
+            ((dataframe['senkou_b_444'] > dataframe['close']))|((dataframe['pivot'] > dataframe['close']))
         return dataframe
        
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
@@ -227,6 +227,6 @@ class Miku_PP_v3(IStrategy):
     def populate_sell_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
             (
-                (dataframe['trending_over'] > 0)
+                (dataframe['sell_fun'] > 0)
             ), 'sell'] = 1
         return dataframe
