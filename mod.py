@@ -39,7 +39,7 @@ class Prediction_Strategy(IStrategy):
 
     # Optimal timeframe for the strategy.
     timeframe = '1h'
-    informative_timeframe = '1d'
+    #informative_timeframe = '1d'
 
     # Run "populate_indicators()" only for new candle.
     process_only_new_candles = True
@@ -66,15 +66,15 @@ class Prediction_Strategy(IStrategy):
         'sell': 'gtc'
     }
 
-    def informative_pairs(self):
-        pairs = self.dp.current_whitelist()
-        informative_pairs = [(pair, self.informative_timeframe)
-                             for pair in pairs]
-        if self.dp:
-            for pair in pairs:
-                informative_pairs += [(pair, "1d")]
+#    def informative_pairs(self):
+ #       pairs = self.dp.current_whitelist()
+  #      informative_pairs = [(pair, self.informative_timeframe)
+   #                          for pair in pairs]
+    #    if self.dp:
+     #       for pair in pairs:
+      #          informative_pairs += [(pair, "1d")]
 
-        return informative_pairs
+       # return informative_pairs
 
     
 
