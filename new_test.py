@@ -96,11 +96,14 @@ class HdGen(IStrategy):
         'main_plot': {
             'pivot_1d': {},
             'rS1_1d': {},
-            'senkou_b_444': {'color': 'yellow'},
+            'senkou_b_444': {'color': 'grey'},
             'kijun_sen_355': {'color': 'blue'},
             'tenkan_sen_355': {'color': 'red'},
             'senkou_a_100': {'color': 'orange'},
             'senkou_b_100': {'color': 'brown'},
+            'senkou_a_20': {'color': 'yellow'},
+            'senkou_b_20': {'color': 'pink'},
+           
         },
         'subplots': {
             'MACD': {
