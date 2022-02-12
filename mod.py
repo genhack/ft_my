@@ -2,7 +2,7 @@
 import numpy as np  # noqa
 import pandas as pd  # noqa
 from pandas import DataFrame
-import xgboost
+#import xgboost
 import catboost
 import sklearn
 import pickle
