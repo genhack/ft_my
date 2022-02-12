@@ -201,7 +201,7 @@ class Miku_PP_v3(IStrategy):
             (dataframe['senkou_a_9'] > dataframe['senkou_a_20']) &
             (dataframe['tenkan_sen_20'] >= dataframe['kijun_sen_20']) &
             (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
-            (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
+            (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9']) &
             (dataframe['pivot_1d'] > dataframe['ema20']) # ema20_5m Buy checker in Dry Run
         ).astype('int')
          
