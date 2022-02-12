@@ -207,12 +207,7 @@ class Miku_PP_v3(IStrategy):
          
         
         dataframe['sell_fun'] = (
-            (
             (dataframe['senkou_b_444'] > dataframe['close'])
-            |
-            (
-            (dataframe['pivot'] > dataframe['close'])
-            )
         ).astype('int')
             
         return dataframe
