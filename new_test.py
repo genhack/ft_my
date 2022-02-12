@@ -73,7 +73,7 @@ def create_ichimoku(dataframe, conversion_line_period, displacement, base_line_p
 class HdGen(IStrategy):
 
     # Optimal timeframe for the strategy
-    timeframe = '1m'
+    timeframe = '5m'
 
     # generate signals from the 1h timeframe
     informative_timeframe = '1h'
