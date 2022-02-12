@@ -71,14 +71,6 @@ def create_ichimoku(dataframe, conversion_line_period, displacement, base_line_p
 
 
 class Miku_PP_v3(IStrategy):
-    """
-     Miku_PP_v3
-     La base de la Estrategia es: Miku_PP_v2 y Miku_1m_5m_CSen44_1_5m
-    
-    Provando en:
-     Miku_1m_5m_CSen444v2_N_1_5
-     SymphonIK
-    """
 
     # Optimal timeframe for the strategy
     timeframe = '5m'
@@ -156,7 +148,10 @@ class Miku_PP_v3(IStrategy):
         create_ichimoku(dataframe, conversion_line_period=9, displacement=26, base_line_periods=26, laggin_span=52)    
         create_ichimoku(dataframe, conversion_line_period=20, displacement=88, base_line_periods=88, laggin_span=88)
         create_ichimoku(dataframe, conversion_line_period=88, displacement=444, base_line_periods=88, laggin_span=88)
+        create_ichimoku(dataframe, conversion_line_period=100, displacement=88, base_line_periods=440, laggin_span=440)
         create_ichimoku(dataframe, conversion_line_period=355, displacement=880, base_line_periods=175, laggin_span=175)
+        create_ichimoku(dataframe, conversion_line_period=444, displacement=444, base_line_periods=444, laggin_span=444)
+
         #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
 
         dataframe['ichimoku_ok'] = (
