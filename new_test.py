@@ -171,7 +171,7 @@ class Miku_PP_v3(IStrategy):
                         displacement=880, base_line_periods=175, laggin_span=175)
       
         create_ichimoku(dataframe, conversion_line_period=444,
-                        displacement=1000, base_line_periods=444, laggin_span=444)
+                        displacement=880, base_line_periods=200, laggin_span=200)
 
 
         #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
