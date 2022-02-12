@@ -67,7 +67,7 @@ def create_ichimoku(dataframe, conversion_line_period, displacement, base_line_p
     dataframe[f'kijun_sen_{conversion_line_period}'] = ichimoku['kijun_sen']
     dataframe[f'senkou_a_{conversion_line_period}'] = ichimoku['senkou_span_a']
     dataframe[f'senkou_b_{conversion_line_period}'] = ichimoku['senkou_span_b']
-    return dataframe
+    return dataframe #<-Thanks Blood4rc
 
 
 class HdGen(IStrategy):
@@ -96,7 +96,7 @@ class HdGen(IStrategy):
         'main_plot': {
             'pivot_1d': {},
             'rS1_1d': {},
-            'r1_1d': {},
+            'senkou_b_444': {'color': 'yellow'},
             'kijun_sen_355': {'color': 'blue'},
             'tenkan_sen_355': {'color': 'red'},
             'senkou_a_100': {'color': 'orange'},
@@ -149,7 +149,6 @@ class HdGen(IStrategy):
         
         create_ichimoku(dataframe, conversion_line_period=9, displacement=26, base_line_periods=26, laggin_span=52)    
         create_ichimoku(dataframe, conversion_line_period=20, displacement=88, base_line_periods=88, laggin_span=88)
-        create_ichimoku(dataframe, conversion_line_period=88, displacement=444, base_line_periods=88, laggin_span=88)
         create_ichimoku(dataframe, conversion_line_period=100, displacement=88, base_line_periods=440, laggin_span=440)
         create_ichimoku(dataframe, conversion_line_period=355, displacement=800, base_line_periods=155, laggin_span=155)
         create_ichimoku(dataframe, conversion_line_period=444, displacement=444, base_line_periods=444, laggin_span=444)
