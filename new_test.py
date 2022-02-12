@@ -159,9 +159,6 @@ class Miku_PP_v3(IStrategy):
         create_ichimoku(dataframe, conversion_line_period=355, displacement=880, base_line_periods=175, laggin_span=175)
         #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
 
-
-       # Notes: Start Trading
-       # * En 1m
         dataframe['ichimoku_ok'] = (
             (dataframe['kijun_sen_355_5m'] >= dataframe['tenkan_sen_355_5m']) &
             (dataframe['senkou_a_100'] > dataframe['senkou_b_100']) &
