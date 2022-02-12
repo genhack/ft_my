@@ -159,6 +159,7 @@ class Miku_PP_v3(IStrategy):
         # Notes: Start Trading
 
         # 1m
+         """ 
         dataframe['ichimoku_ok'] = (
                 (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
                 (dataframe['senkou_a_100'] > dataframe['senkou_b_100']) &
@@ -170,7 +171,7 @@ class Miku_PP_v3(IStrategy):
                 (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
         ).astype('int')
 
-        """        * En 5m
+        """     #5m
         dataframe['ichimoku_ok'] = (
             (dataframe['close'] > dataframe['pivot_1d']) &
             (dataframe['r1_1d'] > dataframe['close']) &
@@ -182,13 +183,13 @@ class Miku_PP_v3(IStrategy):
             (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
             (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
         ).astype('int')
-         """
+       
 
         # (dataframe['pivot_1d'] > dataframe['ema20_5m'])
 
         dataframe['trending_over'] = (
 
-            (dataframe['senkou_b_444'] > dataframe['close'])
+            (dataframe['senkou_b_88'] > dataframe['close'])
 
         ).astype('int')
 
