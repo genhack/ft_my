@@ -169,52 +169,12 @@ class Miku_PP_v3(IStrategy):
             (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
             (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
         ).astype('int')
-        
-        
-        """
-        * En 5m
-        dataframe['ichimoku_ok'] = (
-            (dataframe['close'] > dataframe['pivot_1d']) &
-            (dataframe['r1_1d'] > dataframe['close']) &
-            (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
-            (dataframe['senkou_a_20'] > dataframe['senkou_b_20']) &
-            (dataframe['kijun_sen_20'] > dataframe['tenkan_sen_88']) &
-            (dataframe['senkou_a_9'] > dataframe['senkou_a_20']) &
-            (dataframe['tenkan_sen_20'] >= dataframe['kijun_sen_20']) &
-            (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
-            (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
-        ).astype('int')
-            (dataframe['pivot_1d'] > dataframe['ema20_5m']) anulo ema20_5m para ver si hace entradas en Dry Run
-       
-        """
-        
-       dataframe['trending_over'] = (
+      
+        dataframe['trending_over'] = (
             (dataframe['senkou_b_444'] > dataframe['close'])   
         ).astype('int') * 1
         return dataframe
-       
-
-        # Start Trading
-
-        """
-        dataframe['pivots_ok'] = (
-            (dataframe['close'] > dataframe['pivot_1d']) &
-            (dataframe['rS1_1d'] > dataframe['close']) &
-            (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
-            (dataframe['senkou_a_20'] > dataframe['senkou_b_20'])
-        ).astype('int')        
-
-        
-        dataframe['trending_over'] = (
-            
-            (dataframe['senkou_b_88'] > dataframe['close'])
-            
-        ).astype('int')
-
-        return dataframe
-        
-        """
-
+   
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
 
         if self.timeframe == self.informative_timeframe:
