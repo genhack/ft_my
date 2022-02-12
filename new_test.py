@@ -103,6 +103,8 @@ class HdGen(IStrategy):
             'senkou_b_100': {'color': 'brown'},
             'senkou_a_20': {'color': 'yellow'},
             'senkou_b_20': {'color': 'pink'},
+            'kijun_sen_20': {'color': 'pink'},
+            'tenkan_sen_444': {'color': 'black'},
            
         },
         'subplots': {
