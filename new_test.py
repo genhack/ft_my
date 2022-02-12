@@ -82,7 +82,7 @@ class Miku_PP_v3(IStrategy):
     """
 
     # Optimal timeframe for the strategy
-    timeframe = '5m'
+    timeframe = '1h'
 
     # generate signals from the 1h timeframe
     informative_timeframe = '1d'
