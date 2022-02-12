@@ -70,10 +70,10 @@ def create_ichimoku(dataframe, conversion_line_period, displacement, base_line_p
     return dataframe
 
 
-class Miku_PP_v3(IStrategy):
+class HdGen(IStrategy):
 
     # Optimal timeframe for the strategy
-    timeframe = '5m'
+    timeframe = '15m'
 
     # generate signals from the 1h timeframe
     informative_timeframe = '1d'
@@ -89,7 +89,7 @@ class Miku_PP_v3(IStrategy):
     process_only_new_candles = True
 
     minimal_roi = {
-        "0": 10,
+        "0": 10 #Better Close less then 10%
     }
     
     plot_config = {
@@ -149,7 +149,7 @@ class Miku_PP_v3(IStrategy):
         create_ichimoku(dataframe, conversion_line_period=20, displacement=88, base_line_periods=88, laggin_span=88)
         create_ichimoku(dataframe, conversion_line_period=88, displacement=444, base_line_periods=88, laggin_span=88)
         create_ichimoku(dataframe, conversion_line_period=100, displacement=88, base_line_periods=440, laggin_span=440)
-        create_ichimoku(dataframe, conversion_line_period=355, displacement=880, base_line_periods=175, laggin_span=175)
+        create_ichimoku(dataframe, conversion_line_period=355, displacement=880, base_line_periods=155, laggin_span=155)
         create_ichimoku(dataframe, conversion_line_period=444, displacement=444, base_line_periods=444, laggin_span=444)
 
         #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
