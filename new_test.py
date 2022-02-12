@@ -174,7 +174,7 @@ class Miku_PP_v3(IStrategy):
                         displacement=880, base_line_periods=200, laggin_span=200)
 
 
-        dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
+        #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
 
 
         """
@@ -204,7 +204,7 @@ class Miku_PP_v3(IStrategy):
             (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9']) 
         ).astype('int')
          
-            (dataframe['pivot_1d'] > dataframe['ema20']) # ema20_5m Buy checker in Dry Run
+            #(dataframe['pivot_1d'] > dataframe['ema20']) # ema20_5m Buy checker in Dry Run
          
         
         dataframe['sell_fun'] = (
