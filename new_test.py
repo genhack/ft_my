@@ -190,8 +190,8 @@ class Miku_PP_v3(IStrategy):
          """
         #Better
         dataframe['ichimoku_ok'] = (
-            (dataframe['close'] > dataframe['pivot_1d']) &
-            (dataframe['r1_1d'] > dataframe['close']) &
+            #(dataframe['close'] > dataframe['pivot_1d']) &
+            #(dataframe['r1_1d'] > dataframe['close']) &
             (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
             (dataframe['senkou_a_20'] > dataframe['senkou_b_20']) &
             (dataframe['kijun_sen_20'] > dataframe['tenkan_sen_88']) &
