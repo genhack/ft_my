@@ -1,107 +1,70 @@
-from freqtrade.strategy import IStrategy, merge_informative_pair
+# --- Do not remove these libs ---
+import numpy as np  # noqa
+import pandas as pd  # noqa
 from pandas import DataFrame
-import talib.abstract as ta
-import logging
-import freqtrade.vendor.qtpylib.indicators as qtpylib
-import pandas as pd
-import numpy as np
+import xgboost
+import catboost
+import sklearn
+import pickle
+from numba import jit
+from scipy import signal
+
+from freqtrade.strategy import IStrategy
 import technical.indicators as ftt
-from freqtrade.exchange import timeframe_to_minutes
-from technical.util import resample_to_interval, resampled_merge
+# --------------------------------
+# Add your lib to import here
+import talib.abstract as ta
+import freqtrade.vendor.qtpylib.indicators as qtpylib
 
+# This class is a sample. Feel free to customize it.
+class Prediction_Strategy(IStrategy):
 
-def pivots_points(dataframe: pd.DataFrame, timeperiod=1, levels=4) -> pd.DataFrame:
-    data = {}
-
-    low = qtpylib.rolling_mean(
-        series=pd.Series(index=dataframe.index, data=dataframe["low"]), window=timeperiod
-    )
-
-    high = qtpylib.rolling_mean(
-        series=pd.Series(index=dataframe.index, data=dataframe["high"]), window=timeperiod
-    )
-
-    # Pivot
-    data["pivot"] = qtpylib.rolling_mean(series=qtpylib.typical_price(dataframe), window=timeperiod)
-
-    data["r1"] = data['pivot'] + 0.382 * (high - low)
-
-    data["rS1"] = data['pivot'] + 0.0955 * (high - low)
-
-    data["s1"] = data["pivot"] - 0.382 * (high - low)
-
-    # Calculate Resistances and Supports >1
-    for i in range(2, levels + 1):
-        prev_support = data["s" + str(i - 1)]
-        prev_resistance = data["r" + str(i - 1)]
-
-        # Resitance
-        data["r" + str(i)] = (data["pivot"] - prev_support) + prev_resistance
-
-        # Support
-        data["s" + str(i)] = data["pivot"] - (prev_resistance - prev_support)
-
-    return pd.DataFrame(index=dataframe.index, data=data)
-
-
-def create_ichimoku(dataframe, conversion_line_period, displacement, base_line_periods, laggin_span):
-    ichimoku = ftt.ichimoku(dataframe,
-                            conversion_line_period=conversion_line_period,
-                            base_line_periods=base_line_periods,
-                            laggin_span=laggin_span,
-                            displacement=displacement
-                            )
-    dataframe[f'tenkan_sen_{conversion_line_period}'] = ichimoku['tenkan_sen']
-    dataframe[f'kijun_sen_{conversion_line_period}'] = ichimoku['kijun_sen']
-    dataframe[f'senkou_a_{conversion_line_period}'] = ichimoku['senkou_span_a']
-    dataframe[f'senkou_b_{conversion_line_period}'] = ichimoku['senkou_span_b']
-    dataframe[f'piviot{conversion_line_period}'] = ichimoku['piviot_1d']
-    return dataframe
-
-
-class Miku_PP_v3(IStrategy):
-    # Optimal timeframe for the strategy
-    timeframe = '5m'
-
-    # generate signals from the 1h timeframe
-    informative_timeframe = '1d'
-
-    # WARNING: ichimoku is a long indicator, if you remove or use a
-    # shorter startup_candle_count your results will be unstable/invalid
-    # for up to a week from the start of your backtest or dry/live run
-    # (180 candles = 7.5 days)
-    startup_candle_count = 444  # MAXIMUM ICHIMOKU
-
-    # NOTE: this strat only uses candle information, so processing between
-    # new candles is a waste of resources as nothing will change
-    process_only_new_candles = True
+    INTERFACE_VERSION = 2
 
     minimal_roi = {
-        "0": 10,
+        "360": 0.0,
+        "240": 0.05,
+        "0": 0.1
     }
 
-    plot_config = {
-        'main_plot': {
-            'pivot_1d': {'color': 'blue'},
-            'rS1_1d': {'color': 'orange'},
-            'r1_1d': {'color': 'green'},
-            's1_1d': {'color': 'red'},
-            'senkou_b_88': {'color': 'violet'},
-        },
-        'subplots': {
-            'MACD': {
-                'macd_1h': {'color': 'blue'},
-                'macdsignal_1h': {'color': 'orange'},
-            },
-        }
+    # Optimal stoploss designed for the strategy.
+    # This attribute will be overridden if the config file contains "stoploss".
+    stoploss = -0.9
+
+    # Trailing stoploss
+    trailing_stop = False
+    # trailing_only_offset_is_reached = False
+    # trailing_stop_positive = 0.01
+    # trailing_stop_positive_offset = 0.0  # Disabled / not configured
+
+    # Optimal timeframe for the strategy.
+    timeframe = '1h'
+    informative_timeframe = '1d'
+
+    # Run "populate_indicators()" only for new candle.
+    process_only_new_candles = True
+
+    # These values can be overridden in the "ask_strategy" section in the config.
+    use_sell_signal = True
+    sell_profit_only = False
+    ignore_roi_if_buy_signal = True
+
+    # Number of candles the strategy requires before producing valid signals
+    startup_candle_count: int = 440
+
+    # Optional order type mapping.
+    order_types = {
+        'buy': 'limit',
+        'sell': 'limit',
+        'stoploss': 'market',
+        'stoploss_on_exchange': False
     }
 
-    # WARNING setting a stoploss for this strategy doesn't make much sense, as it will buy
-    # back into the trend at the next available opportunity, unless the trend has ended,
-    # in which case it would sell anyway.
-
-    # Stoploss:
-    stoploss = -0.10
+    # Optional order time in force.
+    order_time_in_force = {
+        'buy': 'gtc',
+        'sell': 'gtc'
+    }
 
     def informative_pairs(self):
         pairs = self.dp.current_whitelist()
@@ -113,114 +76,56 @@ class Miku_PP_v3(IStrategy):
 
         return informative_pairs
 
-    def slow_tf_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
-
-        """
-        # dataframe "1d"
-        """
-
-        dataframe1d = self.dp.get_pair_dataframe(
-            pair=metadata['pair'], timeframe="1d")
-
-        # Pivots Points
-        pp = pivots_points(dataframe1d)
-        dataframe1d['pivot'] = pp['pivot']
-        dataframe1d['r1'] = pp['r1']
-        dataframe1d['s1'] = pp['s1']
-        dataframe1d['rS1'] = pp['rS1']
-        # Pivots Points
-
-        dataframe = merge_informative_pair(
-            dataframe, dataframe1d, self.timeframe, "1d", ffill=True)
-
-        """
-        # dataframe normal
-        """
-
-        create_ichimoku(dataframe, conversion_line_period=9,
-                        displacement=26, base_line_periods=26, laggin_span=52)
-
-        create_ichimoku(dataframe, conversion_line_period=20,
-                        displacement=88, base_line_periods=88, laggin_span=88)
-
-        create_ichimoku(dataframe, conversion_line_period=88,
-                        displacement=444, base_line_periods=88, laggin_span=88)
-
-        create_ichimoku(dataframe, conversion_line_period=100,
-                        displacement=544, base_line_periods=100, laggin_span=100)
-
-        create_ichimoku(dataframe, conversion_line_period=355,
-                        displacement=770, base_line_periods=355, laggin_span=355)
-
-        create_ichimoku(dataframe, conversion_line_period=444,
-                        displacement=1000, base_line_periods=444, laggin_span=444)
-
-        # dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)as
-
-        # Notes: Start Trading
-
-        # 1m
-         """ 
-        dataframe['ichimoku_ok'] = (
-                (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
-                (dataframe['senkou_a_100'] > dataframe['senkou_b_100']) &
-                (dataframe['senkou_a_20'] > dataframe['senkou_b_20']) &
-                (dataframe['kijun_sen_20'] > dataframe['tenkan_sen_444']) &
-                (dataframe['senkou_a_9'] > dataframe['senkou_a_20']) &
-                (dataframe['tenkan_sen_20'] >= dataframe['kijun_sen_20']) &
-                (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
-                (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
-        ).astype('int')
-
-        """     #5m
-        dataframe['ichimoku_ok'] = (
-            (dataframe['close'] > dataframe['pivot_1d']) &
-            (dataframe['r1_1d'] > dataframe['close']) &
-            (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
-            (dataframe['senkou_a_20'] > dataframe['senkou_b_20']) &
-            (dataframe['kijun_sen_20'] > dataframe['tenkan_sen_88']) &
-            (dataframe['senkou_a_9'] > dataframe['senkou_a_20']) &
-            (dataframe['tenkan_sen_20'] >= dataframe['kijun_sen_20']) &
-            (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
-            (dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
-        ).astype('int')
-       
-
-        # (dataframe['pivot_1d'] > dataframe['ema20_5m'])
-
-        dataframe['trending_over'] = (
-
-            (dataframe['senkou_b_88'] > dataframe['close'])
-
-        ).astype('int')
-
-        return dataframe
-
-        """
-
-        # Start Trading
-
-        dataframe['pivots_ok'] = (
-            (dataframe['close'] > dataframe['pivot_1d']) &
-            (dataframe['rS1_1d'] > dataframe['close']) &
-            (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
-            (dataframe['senkou_a_20'] > dataframe['senkou_b_20'])
-        ).astype('int')        
-
-
-        dataframe['trending_over'] = (
-
-            (dataframe['senkou_b_88'] > dataframe['close'])
-
-        ).astype('int')
-
-        return dataframe
-
-        """
+    
 
     def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+        verbose = False
+        col_use = [
+                    'volume','smadiff_3','smadiff_5','smadiff_8','smadiff_13',
+                    'smadiff_21','smadiff_34','smadiff_55','smadiff_89',
+                    'smadiff_120','smadiff_240','maxdiff_3','maxdiff_5','maxdiff_8',
+                    'maxdiff_13','maxdiff_21','maxdiff_34','maxdiff_55','maxdiff_89',
+                    'maxdiff_120','maxdiff_240','std_3','std_5','std_8','std_13',
+                    'std_21','std_34','std_55','std_89','std_120','std_240',
+                    'ma_3','ma_5','ma_8','ma_13','ma_21','ma_34','ma_55','ma_89',
+                    'ma_120','ma_240','z_score_120','time_hourmin','time_dayofweek','time_hour' ]
 
-        dataframe = self.slow_tf_indicators(dataframe, metadata)
+
+        with open('user_data/notebooks/model_portfolio.pkl', 'rb') as f:
+            model = pickle.load(f)
+        model = model[0]
+
+        # Starting create features
+        #sma diff
+        for i in [3,5,8,13,21,34,55,89,120,240]:
+            dataframe[f"smadiff_{i}"] = (dataframe['close'].rolling(i).mean() - dataframe['close'])
+        #max diff
+        for i in [3,5,8,13,21,34,55,89,120,240]:
+            dataframe[f"maxdiff_{i}"] = (dataframe['close'].rolling(i).max() - dataframe['close'])
+        #min diff
+        for i in [3,5,8,13,21,34,55,89,120,240]:
+            dataframe[f"maxdiff_{i}"] = (dataframe['close'].rolling(i).min() - dataframe['close'])
+        #volatiliy
+        for i in [3,5,8,13,21,34,55,89,120,240]:
+            dataframe[f"std_{i}"] = dataframe['close'].rolling(i).std()
+        
+        #Return
+        for i in [3,5,8,13,21,34,55,89,120,240]:
+            dataframe[f"ma_{i}"] = dataframe['close'].pct_change(i).rolling(i).mean()
+        
+        dataframe['z_score_120'] = ((dataframe.ma_13 - dataframe.ma_13.rolling(21).mean() + 1e-9) 
+                            / (dataframe.ma_13.rolling(21).std() + 1e-9))
+        
+        dataframe["date"] = pd.to_datetime(dataframe["date"], unit='ms')
+        dataframe['time_hourmin'] = dataframe.date.dt.hour * 60 + dataframe.date.dt.minute
+        dataframe['time_dayofweek'] = dataframe.date.dt.dayofweek
+        dataframe['time_hour'] = dataframe.date.dt.hour
+
+        #Model predictions
+        preds = pd.DataFrame(model.predict_proba(dataframe[col_use]))
+        preds.columns = [f"pred{i}" for i in range(5)]
+        dataframe = dataframe.reset_index(drop=True)
+        dataframe = pd.concat([dataframe, preds], axis=1)
 
         return dataframe
 
@@ -228,13 +133,21 @@ class Miku_PP_v3(IStrategy):
 
         dataframe.loc[
             (
-                (dataframe['ichimoku_ok'] > 0)
-            ), 'buy'] = 1
+                (dataframe['pred4'] > .45) & 
+                (dataframe["time_hour"].isin([23,2,5,8,11,14,17,20])) &
+                (dataframe['volume'] > 0)  # Make sure Volume is not 0
+            ),
+            'buy'] = 1
+
         return dataframe
 
     def populate_sell_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+
         dataframe.loc[
             (
-                (dataframe['trending_over'] > 0)
-            ), 'sell'] = 1
+                (dataframe['pred4'] < .28) 
+                & (dataframe["time_hour"].isin([23,2,5,8,11,14,17,20]))
+                & (dataframe['volume'] > 0)  # Make sure Volume is not 0
+            ),
+            'sell'] = 1
         return dataframe
