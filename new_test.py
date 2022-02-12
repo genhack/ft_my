@@ -97,8 +97,10 @@ class HdGen(IStrategy):
             'pivot_1d': {},
             'rS1_1d': {},
             'r1_1d': {},
-            's1_1d': {},
-            'senkou_b_88': {},
+            'kijun_sen_355': {'color': 'blue'},
+            'tenkan_sen_355': {'color': 'red'},
+            'senkou_a_100': {'color': 'orange'},
+            'senkou_b_100': {'color': 'brown'},
         },
         'subplots': {
             'MACD': {
@@ -149,7 +151,7 @@ class HdGen(IStrategy):
         create_ichimoku(dataframe, conversion_line_period=20, displacement=88, base_line_periods=88, laggin_span=88)
         create_ichimoku(dataframe, conversion_line_period=88, displacement=444, base_line_periods=88, laggin_span=88)
         create_ichimoku(dataframe, conversion_line_period=100, displacement=88, base_line_periods=440, laggin_span=440)
-        create_ichimoku(dataframe, conversion_line_period=355, displacement=880, base_line_periods=155, laggin_span=155)
+        create_ichimoku(dataframe, conversion_line_period=355, displacement=800, base_line_periods=155, laggin_span=155)
         create_ichimoku(dataframe, conversion_line_period=444, displacement=444, base_line_periods=444, laggin_span=444)
 
         #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
