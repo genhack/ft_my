@@ -204,7 +204,7 @@ class Miku_PP_v3(IStrategy):
       
         dataframe['trending_over'] = (
             (dataframe['pivot_1d'] > dataframe['close']) &
-            (dataframe['pivot_1d'] > dataframe['ema20_5m']) 
+            (dataframe['pivot_1d'] > dataframe['ema20']) 
         ).astype('int')
         return dataframe
        
