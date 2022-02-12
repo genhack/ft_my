@@ -185,8 +185,7 @@ class Miku_PP_v3(IStrategy):
             informative = self.dp.get_pair_dataframe(pair=metadata['pair'], timeframe=self.informative_timeframe)
             informative = self.slow_tf_indicators(informative.copy(), metadata)
 
-            dataframe = merge_informative_pair(dataframe, informative, self.timeframe, self.informative_timeframe,
-                                               ffill=True)
+            dataframe = merge_informative_pair(dataframe, informative, self.timeframe, self.informative_timeframe, ffill=True)
             # don't overwrite the base dataframe's OHLCV information
             skip_columns = [(s + "_" + self.informative_timeframe) for s in
                             ['date', 'open', 'high', 'low', 'close', 'volume']]
