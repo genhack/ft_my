@@ -220,7 +220,7 @@ class Miku_PP_v3(IStrategy):
 
         dataframe.loc[
             (
-                (dataframe['pivots_ok'] > 0)
+                (dataframe['ichimoku_ok'] > 0)
             ), 'buy'] = 1
         return dataframe
 
