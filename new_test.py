@@ -207,7 +207,14 @@ class Miku_PP_v3(IStrategy):
         (dataframe['pivot'] > dataframe['ema20']) # ema20_5m Buy checker in Dry Run
         
          dataframe['sell_fun'] = (
-            ((dataframe['senkou_b_444'] > dataframe['close']))|((dataframe['pivot'] > dataframe['close']))).astype('int')
+             (
+             (dataframe['senkou_b_444'] > dataframe['close'])
+             )
+             |
+             (
+             (dataframe['pivot'] > dataframe['close'])
+             )
+         ).astype('int')
             
         return dataframe
        
