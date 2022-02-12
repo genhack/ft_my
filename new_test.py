@@ -73,10 +73,10 @@ def create_ichimoku(dataframe, conversion_line_period, displacement, base_line_p
 class HdGen(IStrategy):
 
     # Optimal timeframe for the strategy
-    timeframe = '15m'
+    timeframe = '1m'
 
     # generate signals from the 1h timeframe
-    informative_timeframe = '1d'
+    informative_timeframe = '1h'
 
     # WARNING: ichimoku is a long indicator, if you remove or use a
     # shorter startup_candle_count your results will be unstable/invalid
@@ -122,7 +122,7 @@ class HdGen(IStrategy):
         informative_pairs = [(pair, self.informative_timeframe) for pair in pairs]
         if self.dp:
             for pair in pairs:
-                informative_pairs += [(pair, "1d")]
+                informative_pairs += [(pair, "1h")]
         return informative_pairs
 
     def slow_tf_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
@@ -131,17 +131,17 @@ class HdGen(IStrategy):
         # dataframe "1d, 5m"
         """
 
-        dataframe1d = self.dp.get_pair_dataframe(pair=metadata['pair'], timeframe="1d")
+        dataframe1h = self.dp.get_pair_dataframe(pair=metadata['pair'], timeframe="1h")
         #dataframe5m = self.dp.get_pair_dataframe(pair=metadata['pair'], timeframe="5m")
 
         # Pivots Points
-        pp = pivots_points(dataframe1d)
-        dataframe1d['pivot'] = pp['pivot']
-        dataframe1d['r1'] = pp['r1']
-        dataframe1d['s1'] = pp['s1']
-        dataframe1d['rS1'] = pp['rS1']
+        pp = pivots_points(dataframe1h)
+        dataframe1h['pivot'] = pp['pivot']
+        dataframe1h['r1'] = pp['r1']
+        dataframe1h['s1'] = pp['s1']
+        dataframe1h['rS1'] = pp['rS1']
         # Pivots Points
-        dataframe = merge_informative_pair(dataframe, dataframe1d, self.timeframe, "1d", ffill=True)
+        dataframe = merge_informative_pair(dataframe, dataframe1h, self.timeframe, "1h", ffill=True)
 
         """
         # dataframe normal
