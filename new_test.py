@@ -100,8 +100,6 @@ class HdGen(IStrategy):
             'tenkan_sen_355': {'color': 'red'},
             'senkou_a_100': {'color': 'orange'},
             'senkou_b_100': {'color': 'brown'},
-            'kijun_sen_9': {'color': 'red'},
-            'tenkan_sen_20': {'color': 'grey'},
             'tenkan_sen_9': {'color': 'black'},
             
         },
@@ -161,11 +159,10 @@ class HdGen(IStrategy):
         dataframe['catch'] = (
             (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
             (dataframe['senkou_b_100'] > dataframe['senkou_a_100']) &
-            (dataframe['tenkan_sen_9'] = dataframe['senkou_b_100']) 
-            #(dataframe['close'] < dataframe['tenkan_sen_9']) 
+            (dataframe['tenkan_sen_9'] >= dataframe['senkou_b_100']) &
+            (dataframe['close'] > dataframe['rS1']) 
         ).astype('int')
-        
-      
+         
         dataframe['trending_over'] = (
             (dataframe['senkou_b_444'] <= dataframe['close'])   
         ).astype('int') * 2
