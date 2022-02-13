@@ -162,16 +162,20 @@ class HdGen(IStrategy):
         create_ichimoku(dataframe, conversion_line_period=100, displacement=88, base_line_periods=440, laggin_span=440)
         create_ichimoku(dataframe, conversion_line_period=355, displacement=800, base_line_periods=155, laggin_span=155)
         create_ichimoku(dataframe, conversion_line_period=444, displacement=444, base_line_periods=444, laggin_span=444)
-
-        #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
+        
+        #Ema Control for buy and sell on t5. IF ema 5 cros the kinj sen 9 buy. for sell we need ema 10.
+        dataframe['ema5'] = ta.EMA(dataframe, timeperiod=5)
+        dataframe['ema10'] = ta.EMA(dataframe, timeperiod=10)
+      
 
         dataframe['catch'] = (
             (dataframe['close'] > dataframe['pivot_1h']) &
             (dataframe['rS1_1h'] > dataframe['close']) &
             (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
-            (dataframe['kijun_sen_355'] >= dataframe['senkou_b_100']) &
             (dataframe['senkou_b_100'] > dataframe['senkou_a_100']) &
-            (dataframe['kijun_sen_20'] >= dataframe['kijun_sen_355']) &
+            (dataframe['kijun_sen_355'] >= dataframe['senkou_b_100']) &
+            (dataframe['ema5'] = dataframe['kinjun_sen_9']) &
+           #(dataframe['kijun_sen_20'] >= dataframe['kijun_sen_355']) &
             (dataframe['kijun_sen_9'] >= dataframe['kijun_sen_355']) &
             (dataframe['kijun_sen_9'] > dataframe['senkou_b_100']) 
            #(dataframe['kijun_sen_20'] > dataframe['senkou_b_20']) &
