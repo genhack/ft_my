@@ -173,7 +173,7 @@ class HdGen(IStrategy):
            #(dataframe['kijun_sen_355'] > dataframe['senkou_a_100']) &
            #(dataframe['kijun_sen_20'] >= dataframe['kijun_sen_355']) &
             (dataframe['tenkan_sen_9'] >= dataframe['senkou_b_100']) 
-           #(dataframe['kijun_sen_9'] > dataframe['senkou_b_100']) 
+            (dataframe['tenkan_sen_9'] > dataframe['close']) &
            #(dataframe['kijun_sen_20'] > dataframe['senkou_b_20']) &
            #(dataframe['senkou_a_9'] > dataframe['senkou_a_20']) &
            #(dataframe['tenkan_sen_20'] >= dataframe['kijun_sen_20']) if price dor
@@ -182,8 +182,8 @@ class HdGen(IStrategy):
         ).astype('int')
       
         dataframe['trending_over'] = (
-            (dataframe['senkou_b_444'] < dataframe['tenkan_sen_9'])   
-        ).astype('int')
+            (dataframe['senkou_b_444'] <= dataframe['tenkan_sen_9'])   
+        ).astype('int') * 2
         return dataframe
    
     def fast_tf_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
