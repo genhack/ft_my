@@ -98,13 +98,18 @@ class HdGen(IStrategy):
             'rS1_1d': {},
             'senkou_b_444': {'color': 'grey'},
             'kijun_sen_355': {'color': 'blue'},
+            'kijun_sen_20': {'color': 'yellow'},
+            'kijun_sen_9': {'color': 'red'},
             'tenkan_sen_355': {'color': 'red'},
+            'tenkan_sen_20': {'color': 'grey'},
+            'tenkan_sen_9': {'color': 'black'},
             'senkou_a_100': {'color': 'orange'},
             'senkou_b_100': {'color': 'brown'},
             'senkou_a_20': {'color': 'yellow'},
             'senkou_b_20': {'color': 'pink'},
-            'kijun_sen_20': {'color': 'pink'},
-            'tenkan_sen_444': {'color': 'black'},
+            'senkou_a_9': {'color': 'black'},
+             
+            #'tenkan_sen_444': {'color': 'black'},
            
         },
         'subplots': {
@@ -165,7 +170,7 @@ class HdGen(IStrategy):
             (dataframe['senkou_b_100'] > dataframe['senkou_a_100']) &
             (dataframe['kijun_sen_355'] >= dataframe['senkou_b_100']) &
             (dataframe['senkou_a_20'] > dataframe['senkou_b_20']) &
-            (dataframe['kijun_sen_20'] > dataframe['tenkan_sen_444']) &
+           #(dataframe['kijun_sen_20'] > dataframe['tenkan_sen_444']) &
             (dataframe['senkou_a_9'] > dataframe['senkou_a_20']) &
             (dataframe['tenkan_sen_20'] >= dataframe['kijun_sen_20']) &
             (dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
@@ -174,7 +179,7 @@ class HdGen(IStrategy):
       
         dataframe['trending_over'] = (
             (dataframe['senkou_b_444'] > dataframe['close'])   
-        ).astype('int') * 1
+        ).astype('int')
         return dataframe
    
     def fast_tf_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
