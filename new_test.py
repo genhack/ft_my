@@ -161,13 +161,13 @@ class HdGen(IStrategy):
         dataframe['catch'] = (
             (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
             (dataframe['senkou_b_100'] > dataframe['senkou_a_100']) &
-            #(dataframe['tenkan_sen_9'] = dataframe['senkou_b_100']) &
-            (dataframe['close'] < dataframe['tenkan_sen_9']) 
+            (dataframe['tenkan_sen_9'] = dataframe['senkou_b_100']) 
+            #(dataframe['close'] < dataframe['tenkan_sen_9']) 
         ).astype('int')
         
       
         dataframe['trending_over'] = (
-            (dataframe['senkou_b_444'] <= dataframe['tenkan_sen_9'])   
+            (dataframe['senkou_b_444'] <= dataframe['close'])   
         ).astype('int') * 2
         return dataframe
    
