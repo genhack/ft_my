@@ -166,6 +166,8 @@ class HdGen(IStrategy):
         #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
 
         dataframe['catch'] = (
+            (dataframe['close'] > dataframe['pivot_1h']) &
+            (dataframe['rS1_1h'] > dataframe['close']) &
             (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
             (dataframe['kijun_sen_355'] >= dataframe['senkou_b_100']) &
             (dataframe['senkou_b_100'] > dataframe['senkou_a_100']) &
