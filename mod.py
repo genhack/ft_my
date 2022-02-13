@@ -58,6 +58,35 @@ class Miku_1m_5m_CSen444v2_N_1_5(IStrategy):
     minimal_roi = {
         "0": 10,
     }
+    plot_config = {
+        'main_plot': {
+            'pivot_1d': {},
+            'rS1_1d': {},
+            'ema5': {'color': 'blue'},
+            'ema10': {'color': 'pink'},
+            'senkou_b_444': {'color': 'grey'},
+            'kijun_sen_355': {'color': 'blue'},
+            'kijun_sen_20': {'color': 'yellow'},
+            'kijun_sen_9': {'color': 'red'},
+            'tenkan_sen_355': {'color': 'red'},
+            'tenkan_sen_20': {'color': 'grey'},
+            'tenkan_sen_9': {'color': 'black'},
+            'senkou_a_100': {'color': 'orange'},
+            'senkou_b_100': {'color': 'brown'},
+            'senkou_a_20': {'color': 'yellow'},
+            'senkou_b_20': {'color': 'pink'},
+            'senkou_a_9': {'color': 'black'},
+             
+            #'tenkan_sen_444': {'color': 'black'},
+           
+        },
+        'subplots': {
+            'MACD': {
+                'macd_1h': {'color': 'blue'},
+                'macdsignal_1h': {'color': 'orange'},
+            },
+        }
+    }
 
     # WARNING setting a stoploss for this strategy doesn't make much sense, as it will buy
     # back into the trend at the next available opportunity, unless the trend has ended,
