@@ -94,25 +94,16 @@ class HdGen(IStrategy):
     
     plot_config = {
         'main_plot': {
-            'pivot_1d': {},
-            'rS1_1d': {},
-            'ema5': {'color': 'blue'},
-            'ema10': {'color': 'pink'},
+            'rS1_1h': {'color': 'blue'},
             'senkou_b_444': {'color': 'grey'},
             'kijun_sen_355': {'color': 'blue'},
-            'kijun_sen_20': {'color': 'yellow'},
-            'kijun_sen_9': {'color': 'red'},
             'tenkan_sen_355': {'color': 'red'},
-            'tenkan_sen_20': {'color': 'grey'},
-            'tenkan_sen_9': {'color': 'black'},
             'senkou_a_100': {'color': 'orange'},
             'senkou_b_100': {'color': 'brown'},
-            'senkou_a_20': {'color': 'yellow'},
-            'senkou_b_20': {'color': 'pink'},
-            'senkou_a_9': {'color': 'black'},
-             
-            #'tenkan_sen_444': {'color': 'black'},
-           
+            'kijun_sen_9': {'color': 'red'},
+            'tenkan_sen_20': {'color': 'grey'},
+            'tenkan_sen_9': {'color': 'black'},
+            
         },
         'subplots': {
             'MACD': {
@@ -170,16 +161,14 @@ class HdGen(IStrategy):
         dataframe['catch'] = (
             (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
             (dataframe['senkou_b_100'] > dataframe['senkou_a_100']) &
-           #(dataframe['kijun_sen_355'] > dataframe['senkou_a_100']) &
-           #(dataframe['kijun_sen_20'] >= dataframe['kijun_sen_355']) &
             (dataframe['tenkan_sen_9'] = dataframe['senkou_b_100']) &
             (dataframe['close'] < dataframe['tenkan_sen_9']) 
-           #(dataframe['kijun_sen_20'] > dataframe['senkou_b_20']) &
-           #(dataframe['senkou_a_9'] > dataframe['senkou_a_20']) &
-           #(dataframe['tenkan_sen_20'] >= dataframe['kijun_sen_20']) 
-           #(dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
-           #(dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
         ).astype('int')
+         
+        dataframe['profit'] = (
+            (dataframe['catch'] >= dataframe['rS1']
+        ).astype('int')     
+        
       
         dataframe['trending_over'] = (
             (dataframe['senkou_b_444'] <= dataframe['tenkan_sen_9'])   
@@ -198,7 +187,7 @@ class HdGen(IStrategy):
 
     def populate_buy_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
-            (dataframe['catch'] > 0)
+            (dataframe['profit'] > 0)
             & (dataframe['trending_over'] <= 0)
             , 'buy'] = 1
         return dataframe
