@@ -169,6 +169,7 @@ class HdGen(IStrategy):
             (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
             (dataframe['senkou_b_100'] > dataframe['senkou_a_100']) &
             (dataframe['kijun_sen_355'] >= dataframe['senkou_b_100']) &
+            (dataframe['tenkan_sen_355'] >= dataframe['senkou_b_100']) &
             (dataframe['kijun_sen_9'] > dataframe['senkou_b_100']) 
            #(dataframe['kijun_sen_20'] > dataframe['senkou_b_20']) &
            #(dataframe['senkou_a_9'] > dataframe['senkou_a_20']) &
