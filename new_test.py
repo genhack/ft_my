@@ -26,7 +26,7 @@ def pivots_points(dataframe: pd.DataFrame, timeperiod=1, levels=4) -> pd.DataFra
         series=pd.Series(index=dataframe.index, data=dataframe["high"]), window=timeperiod
     )
 
-    # Pivot
+    # Pivot WIP Genhack 13022021.
     data["pivot"] = qtpylib.rolling_mean(series=qtpylib.typical_price(dataframe), window=timeperiod)
 
     # Resistance #1
