@@ -178,7 +178,7 @@ class HdGen(IStrategy):
         ).astype('int')
       
         dataframe['trending_over'] = (
-            (dataframe['senkou_b_444'] > dataframe['close'])   
+            (dataframe['senkou_b_444'] < dataframe['tenkan_sen_9'])   
         ).astype('int')
         return dataframe
    
