@@ -159,7 +159,7 @@ class HdGen(IStrategy):
         # dataframe normal
         """
         
-        create_ichimoku(dataframe, conversion_line_period=9, displacement=0, base_line_periods=26, laggin_span=52)    
+        create_ichimoku(dataframe, conversion_line_period=9, displacement=26, base_line_periods=26, laggin_span=52)    
         create_ichimoku(dataframe, conversion_line_period=20, displacement=88, base_line_periods=88, laggin_span=88)
         create_ichimoku(dataframe, conversion_line_period=100, displacement=88, base_line_periods=440, laggin_span=440)
         create_ichimoku(dataframe, conversion_line_period=355, displacement=800, base_line_periods=155, laggin_span=155)
