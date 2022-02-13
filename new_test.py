@@ -167,6 +167,7 @@ class HdGen(IStrategy):
 
         dataframe['catch'] = (
             (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
+            (dataframe['tenkan_sen_355'] >= dataframe['senkou_b_100']) &
             (dataframe['senkou_b_100'] > dataframe['senkou_a_100']) &
             (dataframe['kijun_sen_20'] >= dataframe['kijun_sen_355']) &
             (dataframe['kijun_sen_9'] >= dataframe['kijun_sen_355']) &
