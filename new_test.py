@@ -173,10 +173,10 @@ class HdGen(IStrategy):
            #(dataframe['kijun_sen_355'] > dataframe['senkou_a_100']) &
            #(dataframe['kijun_sen_20'] >= dataframe['kijun_sen_355']) &
             (dataframe['tenkan_sen_9'] >= dataframe['senkou_b_100']) &
-            (dataframe['tenkan_sen_9'] > dataframe['close']) 
+            (dataframe['close'] > dataframe['tenkan_sen_9']) 
            #(dataframe['kijun_sen_20'] > dataframe['senkou_b_20']) &
            #(dataframe['senkou_a_9'] > dataframe['senkou_a_20']) &
-           #(dataframe['tenkan_sen_20'] >= dataframe['kijun_sen_20']) if price dor
+           #(dataframe['tenkan_sen_20'] >= dataframe['kijun_sen_20']) 
            #(dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
            #(dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
         ).astype('int')
