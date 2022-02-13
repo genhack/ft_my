@@ -96,6 +96,8 @@ class HdGen(IStrategy):
         'main_plot': {
             'pivot_1d': {},
             'rS1_1d': {},
+            'ema5': {'color': 'blue'},
+            'ema10': {'color': 'pink'},
             'senkou_b_444': {'color': 'grey'},
             'kijun_sen_355': {'color': 'blue'},
             'kijun_sen_20': {'color': 'yellow'},
