@@ -165,14 +165,14 @@ class HdGen(IStrategy):
 
         #dataframe['ema20'] = ta.EMA(dataframe, timeperiod=20)
 
-        dataframe['ichimoku_ok'] = (
+        dataframe['catch'] = (
             (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
             (dataframe['senkou_b_100'] > dataframe['senkou_a_100']) &
             (dataframe['kijun_sen_355'] >= dataframe['senkou_b_100']) &
-            (dataframe['senkou_a_20'] > dataframe['senkou_b_20']) &
-           #(dataframe['kijun_sen_20'] > dataframe['tenkan_sen_444']) &
-            (dataframe['senkou_a_9'] > dataframe['senkou_a_20']) &
-            (dataframe['tenkan_sen_20'] >= dataframe['kijun_sen_20']) 
+            (dataframe['kijun_sen_9'] > dataframe['senkou_b_100']) 
+           #(dataframe['kijun_sen_20'] > dataframe['senkou_b_20']) &
+           #(dataframe['senkou_a_9'] > dataframe['senkou_a_20']) &
+           #(dataframe['tenkan_sen_20'] >= dataframe['kijun_sen_20']) 
            #(dataframe['tenkan_sen_9'] >= dataframe['tenkan_sen_20']) &
            #(dataframe['tenkan_sen_9'] >= dataframe['kijun_sen_9'])
         ).astype('int')
@@ -194,7 +194,7 @@ class HdGen(IStrategy):
 
     def populate_buy_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
-            (dataframe['ichimoku_ok'] > 0)
+            (dataframe['catch'] > 0)
             & (dataframe['trending_over'] <= 0)
             , 'buy'] = 1
         return dataframe
