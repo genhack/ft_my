@@ -195,7 +195,7 @@ class HdGen(IStrategy):
     def populate_buy_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
             (dataframe['ichimoku_ok'] > 0)
-            & (dataframe['trending_over'] < 0)
+            & (dataframe['trending_over'] <= 0)
             , 'buy'] = 1
         return dataframe
 
