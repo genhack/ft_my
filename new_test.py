@@ -161,8 +161,8 @@ class HdGen(IStrategy):
         dataframe['catch'] = (
             (dataframe['kijun_sen_355'] >= dataframe['tenkan_sen_355']) &
             (dataframe['senkou_b_100'] > dataframe['senkou_a_100']) &
-            (dataframe['tenkan_sen_9'] = dataframe['senkou_b_100']) &
-            (dataframe['close'] < dataframe['rS1']) 
+            (dataframe['tenkan_sen_9'] => dataframe['senkou_b_100']) &
+            (dataframe['close'] > dataframe['rS1']) 
         ).astype('int')    
         
       
@@ -183,7 +183,7 @@ class HdGen(IStrategy):
 
     def populate_buy_trend(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
         dataframe.loc[
-            (dataframe['profit'] > 0)
+            (dataframe['catch'] > 0)
             & (dataframe['trending_over'] <= 0)
             , 'buy'] = 1
         return dataframe
