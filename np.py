@@ -213,20 +213,22 @@ class Miku_PP_v4(IStrategy):
 
 
         dataframe['ichimoku_ok'] = (
-                #(dataframe['close'] > dataframe['pivot_1d']) &
+                (dataframe['r1_1d'] > dataframe['pivot_1d']) &
                 #(dataframe['close'] > dataframe['tenkan_sen_355']) &
                 (dataframe['kijun_sen_355'] > dataframe['tenkan_sen_355']) &
                 (dataframe['senkou_b_100'] > dataframe['senkou_a_100']) &
                 (dataframe['kijun_sen_355'] >= dataframe['senkou_b_100']) &
-                (dataframe['tenkan_sen_9'] >= dataframe['senkou_b_100'])&
-                (dataframe['tenkan_sen_9'] >= dataframe['close'])
+                (dataframe['tenkan_sen_9'] >= dataframe['senkou_b_100']) &
+                (dataframe['tenkan_sen_9'] > dataframe['r1_1d']) &
+                (dataframe['tenkan_sen_9'] > dataframe['close'])
         ).astype('int')
 
         # (dataframe['pivot_1d'] > dataframe['ema20_5m'])# anulo ema20_5m para ver si hace entradas en Dry Run
 
         dataframe['trending_over'] = (
                 (
-                    (dataframe['ema5'] > dataframe['close'])&
+                    (dataframe['tenkan_sen_9'] >= dataframe['r1_1d']) &
+                    (dataframe['close'] > dataframe['r1_1d']) &
                     (dataframe['tenkan_sen_9'] > dataframe['close'].shift(-2))
                 )
         ).astype('int')
