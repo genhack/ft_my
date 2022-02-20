@@ -115,7 +115,7 @@ class Miku_PP_v4(IStrategy):
     process_only_new_candles = True
 
     minimal_roi = {
-        "0": 10,
+        "0": 10
     }
 
     plot_config = {
@@ -213,19 +213,21 @@ class Miku_PP_v4(IStrategy):
 
 
         dataframe['ichimoku_ok'] = (
-                (dataframe['close'] > dataframe['pivot_1d']) &
+                #(dataframe['close'] > dataframe['pivot_1d']) &
                 #(dataframe['close'] > dataframe['tenkan_sen_355']) &
                 (dataframe['kijun_sen_355'] > dataframe['tenkan_sen_355']) &
                 (dataframe['senkou_b_100'] > dataframe['senkou_a_100']) &
                 (dataframe['kijun_sen_355'] >= dataframe['senkou_b_100']) &
-                (dataframe['tenkan_sen_9'] >= dataframe['senkou_b_100'])
+                (dataframe['tenkan_sen_9'] >= dataframe['senkou_b_100'])&
+                (dataframe['tenkan_sen_9'] >= dataframe['close'])
         ).astype('int')
 
         # (dataframe['pivot_1d'] > dataframe['ema20_5m'])# anulo ema20_5m para ver si hace entradas en Dry Run
 
         dataframe['trending_over'] = (
                 (
-                    (dataframe['tenkan_sen_9'] >= dataframe['close'].shift(-4))
+                    (dataframe['ema5'] > dataframe['close'])&
+                    (dataframe['tenkan_sen_9'] > dataframe['close'].shift(-2))
                 )
         ).astype('int')
 
