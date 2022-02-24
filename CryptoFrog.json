@@ -1,0 +1,57 @@
+{
+  "strategy_name": "CryptoFrog",
+  "params": {
+    "trailing": {
+      "trailing_stop": false,
+      "trailing_stop_positive": 0.01,
+      "trailing_stop_positive_offset": 0.022,
+      "trailing_only_offset_is_reached": true
+    },
+    "buy": {
+      "bbw_exp_buy": true,
+      "ha_buy_check": true,
+      "vfi_buy": 0,
+      "adx_buy": 79,
+      "buy_triggers": "superabs",
+      "dmi_minus": 28,
+      "fast_d_buy": 9,
+      "mfi_buy": 12,
+      "msq_normabs_buy": 3.236,
+      "msq_normabs_buy_loosener": 0.909,
+      "srsi_d_buy": 17
+    },
+    "sell": {
+      "bbw_exp_sell": true,
+      "ha_sell_check": true,
+      "sell_triggers": "superabs",
+      "vfi_sell": 0,
+      "adx_sell": 35,
+      "cstp_bail_how": "time",
+      "cstp_bail_roc": -0.031,
+      "cstp_bail_time": 1194,
+      "cstp_threshold": 0.0,
+      "dmi_plus": 28,
+      "droi_pullback": false,
+      "droi_pullback_amount": 0.016,
+      "droi_pullback_respect_table": true,
+      "droi_trend_type": "any",
+      "fast_d_sell": 89,
+      "mfi_sell": 80,
+      "msq_normabs_sell": 4.296,
+      "srsi_d_sell": 79,
+      "stoploss_method": "roctime"
+    },
+    "protection": {},
+    "roi": {
+      "0": 0.078,
+      "20": 0.026,
+      "30": 0.01,
+      "140": 0
+    },
+    "stoploss": {
+      "stoploss": -0.343
+    }
+  },
+  "ft_stratparam_v": 1,
+  "export_time": "2022-02-23 21:43:33.587433+00:00"
+}
