@@ -160,18 +160,18 @@ class hdGen(IStrategy):
             # qtpylib.crossed_above(dataframe['ema10'], dataframe['rS1'])
             # #(dataframe['ema10'] >= dataframe['rS1'])
 
-            dataframe['trending_over'] = (
+        dataframe['trending_over'] = (
             (
             (dataframe['ema10'] > dataframe['ema5'])
-        )
-        |
-        (
+            )
+            |
+            (
             qtpylib.crossed_above(dataframe['ema60'] , dataframe['ema5'])
-        )
-        |
-        (
+            )
+            |
+            (
             qtpylib.crossed_above(dataframe['ema60'] , dataframe['ema10'])  # Need some test...
-        )
+            )
         ).astype('int')
 
         return dataframe
