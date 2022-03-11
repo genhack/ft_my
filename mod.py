@@ -109,12 +109,12 @@ class hdGen(IStrategy):
         dataframe['pivots_ok'] = (
                 (dataframe['ema5'] > dataframe['ema10'])
                 &
-	            (dataframe['ema5'] > dataframe['high_pr1'])
-	            &
-                (dataframe['ema5'] > dataframe['ema10']))
-
-
-        ).astype('int')
+	        (dataframe['ema5'] > dataframe['high_pr1'])
+	        &
+                (dataframe['ema5'] > dataframe['ema10'])
+		&
+		(dataframe['volume'] > dataframe['volume'].shift(2))
+	).astype('int')
 
         # # Stiamo Salendo
         # (dataframe['close_pr1'] > dataframe['pivot']) &
