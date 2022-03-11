@@ -7,7 +7,6 @@ import technical.indicators as ftt
 
 
 def pivots_points(dataframe: pd.DataFrame , timeperiod=1 , levels=4) -> pd.DataFrame:
-
     data = {}
     low = qtpylib.rolling_mean(
         series=pd.Series(index=dataframe.index , data=dataframe["low"]) , window=timeperiod
@@ -17,7 +16,7 @@ def pivots_points(dataframe: pd.DataFrame , timeperiod=1 , levels=4) -> pd.DataF
     )
 
     # Pivot
-    data["pivot"] = qtpylib.rolling_mean(series=qtpylib.typical_price(dataframe), window=timeperiod)
+    data["pivot"] = qtpylib.rolling_mean(series=qtpylib.typical_price(dataframe) , window=timeperiod)
     # R1 = PP + 0.382 * (HIGHprev - LOWprev) ... fibonacci
     data["r1"] = data['pivot'] + 0.382 * (high - low)
     data["rS1"] = data['pivot'] + 0.0955 * (high - low)
@@ -44,7 +43,7 @@ class hdGen(IStrategy):
     informative_timeframe = '1h'
     process_only_new_candles = False
     buy_params = {
-     'buy-rsi': 70
+        'buy-rsi': 70
     }
 
     minimal_roi = {
@@ -56,30 +55,30 @@ class hdGen(IStrategy):
 
     plot_config = {
         'main_plot': {
-            'close_pr1': {'color': 'brown'},
-            'high_pr1': {'color': 'green'},
-            'pivot': {'color': 'orange'},
-            'r1': {'color': 'red'},
-            'ema5': {'color': 'blue'},
-            'ema10': {'color': 'pink'},
-            'ema60': {'color': 'yellow'},
-            'ema200': {'color': 'grey'},
-            'rS1': {'color': 'blue'},
-	    'sR1': {'color': 'green'},
+            'close_pr1': {'color': 'brown'} ,
+            'high_pr1': {'color': 'green'} ,
+            'pivot': {'color': 'orange'} ,
+            'r1': {'color': 'red'} ,
+            'ema5': {'color': 'blue'} ,
+            'ema10': {'color': 'pink'} ,
+            'ema60': {'color': 'yellow'} ,
+            'ema200': {'color': 'grey'} ,
+            'rS1': {'color': 'blue'} ,
+            'sR1': {'color': 'green'} ,
             's1': {'color': 'black'}
-        },
+        } ,
         'subplots': {
-		"SRSI": {
-                'srsi_k': {'color': 'blue'},
-                'srsi_d': {'color': 'red'},
-           	 },
-            	"ATR": {
-                'atr': {'color': 'blue'},
-		    },
-		"RSI": {
-                'atr': {'color': 'blue'},
-		},
-	}
+            "SRSI": {
+                'srsi_k': {'color': 'blue'} ,
+                'srsi_d': {'color': 'red'} ,
+            } ,
+            "ATR": {
+                'atr': {'color': 'blue'} ,
+            } ,
+            "RSI": {
+                'rsi': {'color': 'blue'} ,
+            } ,
+        }
     }
 
     def informative_pairs(self):
@@ -88,14 +87,14 @@ class hdGen(IStrategy):
                              for pair in pairs]
         if self.dp:
             for pair in pairs:
-                informative_pairs += [(pair, "1d")]
+                informative_pairs += [(pair , "1d")]
 
         return informative_pairs
 
     def slow_tf_indicators(self , dataframe: DataFrame , metadata: dict) -> DataFrame:
 
         dataframe1d = self.dp.get_pair_dataframe(
-            pair=metadata['pair'], timeframe="1d")
+            pair=metadata['pair'] , timeframe="1d")
 
         # Pivots Points
         pp = pivots_points(dataframe1d)
@@ -104,83 +103,82 @@ class hdGen(IStrategy):
         dataframe['s1'] = pp['s1']
         dataframe['rS1'] = pp['rS1']
         dataframe['sR1'] = pp['sR1']
-	
+
         # Definiamo H e C giorno prima
         dataframe['close_pr1'] = dataframe1d['close']
         dataframe['high_pr1'] = dataframe1d['high']
 
         dataframe = merge_informative_pair(
-            dataframe, dataframe1d, self.timeframe, "1d", ffill=True)
+            dataframe , dataframe1d , self.timeframe , "1d" , ffill=True)
 
-        dataframe['ema5'] = ta.EMA(dataframe, timeperiod=5)
-        dataframe['ema10'] = ta.EMA(dataframe, timeperiod=10)
-        dataframe['ema60'] = ta.EMA(dataframe, timeperiod=60)
-        dataframe['ema220'] = ta.EMA(dataframe, timeperiod=220)
-	dataframe['atr'] = ta.ATR(dataframe, timeperiod=14)
-	dataframe['rsi'] = ta.RSI(dataframe, timeperiod=14)
-	#RSI
-	period = 14
+        dataframe['ema5'] = ta.EMA(dataframe , timeperiod=5)
+        dataframe['ema10'] = ta.EMA(dataframe , timeperiod=10)
+        dataframe['ema60'] = ta.EMA(dataframe , timeperiod=60)
+        dataframe['ema220'] = ta.EMA(dataframe , timeperiod=220)
+        dataframe['atr'] = ta.ATR(dataframe , timeperiod=14)
+        dataframe['rsi'] = ta.RSI(dataframe , timeperiod=14)
+        # RSI
+        period = 14
         smoothD = 3
         SmoothK = 3
-        stochrsi  = (dataframe['rsi'] - dataframe['rsi'].rolling(period).min()) / (dataframe['rsi'].rolling(period).max() - dataframe['rsi'].rolling(period).min())
+        stochrsi = (dataframe['rsi'] - dataframe['rsi'].rolling(period).min()) / (
+                    dataframe['rsi'].rolling(period).max() - dataframe['rsi'].rolling(period).min())
         dataframe['srsi_k'] = stochrsi.rolling(SmoothK).mean() * 100
         dataframe['srsi_d'] = dataframe['srsi_k'].rolling(smoothD).mean()
-
-
 
         # Start Trading
 
         dataframe['pivots_ok'] = (
                 (dataframe['ema5'] > dataframe['ema10'])
                 &
-	        (dataframe['ema5'] > dataframe['high_pr1'])
-		&
-		(dataframe['volume'] > dataframe['volume'].shift(2))
-		&
-		(dataframe['ema60'] < dataframe['high_pr1'])
-		&
-		(qtpylib.crossed_above(dataframe['rsi'], params['buy-rsi'])
-	).astype('int')
+                (dataframe['ema5'] > dataframe['high_pr1'])
+                &
+                (dataframe['volume'] > dataframe['volume'].shift(2))
+                &
+                (dataframe['ema60'] < dataframe['high_pr1'])
+                &
+                (qtpylib.crossed_above(dataframe['rsi'] , params['buy-rsi'])
+                 ).astype('int')
 
 
-        # # Stiamo Salendo
-        # (dataframe['close_pr1'] > dataframe['pivot']) &
-        # #(dataframe['close'] > dataframe['ema220']) &
-        # (dataframe['ema60'] > dataframe['ema220']) &
-        # #(dataframe['pivot'] > dataframe['ema60']) & #Per ora lasciamo ?!
-        # # (dataframe['ema60'] > dataframe['pivot']) &
-        # # Catch The Pump!
-        # #(dataframe['ema10'] > dataframe['ema60']) &
-        #
-        # # (dataframe['open'] > dataframe['close_pr1'])
-        # # |
-        # #(dataframe['close'] >= dataframe['pivot'])
-        # #&
-        # #(dataframe['ema5'] > dataframe['ema10']) &
-        # # qtpylib.crossed_above(dataframe['ema5'] , dataframe['close_pr1'])
-        # # |
-        # qtpylib.crossed_above(dataframe['ema10'], dataframe['rS1'])
-        # #(dataframe['ema10'] >= dataframe['rS1'])
- 
-        dataframe['trending_over'] = (
-                (
-                    (dataframe['ema10'] > dataframe['ema5'])
-                )
-                |
-                (
-                    qtpylib.crossed_above(dataframe['ema60'], dataframe['ema5'])
-                )
-                |
-                (
-                    qtpylib.crossed_above(dataframe['ema60'], dataframe['ema10']) #Need some test...
-                )
+            # # Stiamo Salendo
+            # (dataframe['close_pr1'] > dataframe['pivot']) &
+            # #(dataframe['close'] > dataframe['ema220']) &
+            # (dataframe['ema60'] > dataframe['ema220']) &
+            # #(dataframe['pivot'] > dataframe['ema60']) & #Per ora lasciamo ?!
+            # # (dataframe['ema60'] > dataframe['pivot']) &
+            # # Catch The Pump!
+            # #(dataframe['ema10'] > dataframe['ema60']) &
+            #
+            # # (dataframe['open'] > dataframe['close_pr1'])
+            # # |
+            # #(dataframe['close'] >= dataframe['pivot'])
+            # #&
+            # #(dataframe['ema5'] > dataframe['ema10']) &
+            # # qtpylib.crossed_above(dataframe['ema5'] , dataframe['close_pr1'])
+            # # |
+            # qtpylib.crossed_above(dataframe['ema10'], dataframe['rS1'])
+            # #(dataframe['ema10'] >= dataframe['rS1'])
+
+            dataframe['trending_over'] = (
+            (
+            (dataframe['ema10'] > dataframe['ema5'])
+        )
+        |
+        (
+            qtpylib.crossed_above(dataframe['ema60'] , dataframe['ema5'])
+        )
+        |
+        (
+            qtpylib.crossed_above(dataframe['ema60'] , dataframe['ema10'])  # Need some test...
+        )
         ).astype('int')
 
         return dataframe
 
-    def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame:
+    def populate_indicators(self , dataframe: DataFrame , metadata: dict) -> DataFrame:
 
-        dataframe = self.slow_tf_indicators(dataframe, metadata)
+        dataframe = self.slow_tf_indicators(dataframe , metadata)
 
         return dataframe
 
@@ -189,12 +187,12 @@ class hdGen(IStrategy):
         dataframe.loc[
             (
                 (dataframe['pivots_ok'] > 0)
-            ), 'buy'] = 1
+            ) , 'buy'] = 1
         return dataframe
 
-    def populate_sell_trend(self, dataframe: DataFrame , metadata: dict) -> DataFrame:
+    def populate_sell_trend(self , dataframe: DataFrame , metadata: dict) -> DataFrame:
         dataframe.loc[
             (
                 (dataframe['trending_over'] > 0)
-            ), 'sell'] = 1
+            ) , 'sell'] = 1
         return dataframe
