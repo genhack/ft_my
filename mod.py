@@ -21,6 +21,7 @@ def pivots_points(dataframe: pd.DataFrame , timeperiod=1 , levels=4) -> pd.DataF
     # R1 = PP + 0.382 * (HIGHprev - LOWprev) ... fibonacci
     data["r1"] = data['pivot'] + 0.382 * (high - low)
     data["rS1"] = data['pivot'] + 0.0955 * (high - low)
+    data["tp"] = data['r1'] + 0.181 * (high - low)
     # Resistance #2
     # S1 = PP - 0.382 * (HIGHprev - LOWprev) ... fibonacci
     data["s1"] = data["pivot"] - 0.382 * (high - low)
@@ -91,6 +92,7 @@ class hdGen(IStrategy):
         dataframe['s1'] = pp['s1']
         dataframe['rS1'] = pp['rS1']
         dataframe['sR1'] = pp['sR1']
+	dataframe['tp'] = pp['tp']
 
         # Definiamo H e C giorno prima
         dataframe['close_pr1'] = dataframe1d['close']
@@ -137,7 +139,7 @@ class hdGen(IStrategy):
  
         dataframe['trending_over'] = (
                 (
-                    (dataframe['ema10'] > dataframe['ema5'])
+                    (dataframe['ema10'] > dataframe['tp'])
                 )
                 |
                 (
