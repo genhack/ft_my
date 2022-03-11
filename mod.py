@@ -21,7 +21,6 @@ def pivots_points(dataframe: pd.DataFrame , timeperiod=1 , levels=4) -> pd.DataF
     # R1 = PP + 0.382 * (HIGHprev - LOWprev) ... fibonacci
     data["r1"] = data['pivot'] + 0.382 * (high - low)
     data["rS1"] = data['pivot'] + 0.0955 * (high - low)
-    data["tp"] = data['r1'] + 0.181 * (high - low)
     # Resistance #2
     # S1 = PP - 0.382 * (HIGHprev - LOWprev) ... fibonacci
     data["s1"] = data["pivot"] - 0.382 * (high - low)
@@ -44,6 +43,9 @@ class hdGen(IStrategy):
     # generate signals from the 1h timeframe
     informative_timeframe = '1h'
     process_only_new_candles = False
+    buy_params = {
+     'buy-rsi': 70
+    }
 
     minimal_roi = {
         "0": 7
@@ -67,6 +69,15 @@ class hdGen(IStrategy):
             's1': {'color': 'black'}
         },
         'subplots': {
+		"SRSI": {
+                'srsi_k': {'color': 'blue'},
+                'srsi_d': {'color': 'red'},
+           	 },
+            	"ATR": {
+                'atr': {'color': 'blue'},
+		    },
+		"RSI": {
+                'atr': {'color': 'blue'},
         }
     }
 
@@ -92,7 +103,6 @@ class hdGen(IStrategy):
         dataframe['s1'] = pp['s1']
         dataframe['rS1'] = pp['rS1']
         dataframe['sR1'] = pp['sR1']
-	dataframe['tp'] = pp['tp']
 	
         # Definiamo H e C giorno prima
         dataframe['close_pr1'] = dataframe1d['close']
@@ -105,6 +115,17 @@ class hdGen(IStrategy):
         dataframe['ema10'] = ta.EMA(dataframe, timeperiod=10)
         dataframe['ema60'] = ta.EMA(dataframe, timeperiod=60)
         dataframe['ema220'] = ta.EMA(dataframe, timeperiod=220)
+	dataframe['atr'] = ta.ATR(dataframe, timeperiod=14)
+	dataframe['rsi'] = ta.RSI(dataframe, timeperiod=14)
+	#RSI
+	period = 14
+        smoothD = 3
+        SmoothK = 3
+        stochrsi  = (dataframe['rsi'] - dataframe['rsi'].rolling(period).min()) / (dataframe['rsi'].rolling(period).max() - dataframe['rsi'].rolling(period).min())
+        dataframe['srsi_k'] = stochrsi.rolling(SmoothK).mean() * 100
+        dataframe['srsi_d'] = dataframe['srsi_k'].rolling(smoothD).mean()
+
+
 
         # Start Trading
 
@@ -116,7 +137,10 @@ class hdGen(IStrategy):
 		(dataframe['volume'] > dataframe['volume'].shift(2))
 		&
 		(dataframe['ema60'] < dataframe['high_pr1'])
+		&
+		(qtpylib.crossed_above(dataframe['rsi'], params['buy-rsi'])
 	).astype('int')
+
 
         # # Stiamo Salendo
         # (dataframe['close_pr1'] > dataframe['pivot']) &
@@ -139,7 +163,7 @@ class hdGen(IStrategy):
  
         dataframe['trending_over'] = (
                 (
-                    (dataframe['ema10'] > dataframe['tp'])
+                    (dataframe['ema10'] > dataframe['ema5'])
                 )
                 |
                 (
