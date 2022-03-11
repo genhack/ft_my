@@ -107,53 +107,41 @@ class hdGen(IStrategy):
         # Start Trading
 
         dataframe['pivots_ok'] = (
-                (dataframe['close'] > dataframe['high_pr1'])
-                &
-	        (dataframe['ema60'] > dataframe['sR1'])
-	        &
                 (dataframe['ema5'] > dataframe['ema10'])
                 &
-                (qtpylib.crossed_above(dataframe['ema5'], dataframe['rS1']))
+	            (dataframe['ema5'] > dataframe['high_pr1'])
+	            &
+                (dataframe['ema5'] > dataframe['ema10']))
 
-            # # Stiamo Salendo
-            # (dataframe['close_pr1'] > dataframe['pivot']) &
-            # #(dataframe['close'] > dataframe['ema220']) &
-            # (dataframe['ema60'] > dataframe['ema220']) &
-            # #(dataframe['pivot'] > dataframe['ema60']) & #Per ora lasciamo ?!
-            # # (dataframe['ema60'] > dataframe['pivot']) &
-            # # Catch The Pump!
-            # #(dataframe['ema10'] > dataframe['ema60']) &
-            #
-            # # (dataframe['open'] > dataframe['close_pr1'])
-            # # |
-            # #(dataframe['close'] >= dataframe['pivot'])
-            # #&
-            # #(dataframe['ema5'] > dataframe['ema10']) &
-            # # qtpylib.crossed_above(dataframe['ema5'] , dataframe['close_pr1'])
-            # # |
-            # qtpylib.crossed_above(dataframe['ema10'], dataframe['rS1'])
-            # #(dataframe['ema10'] >= dataframe['rS1'])
+
         ).astype('int')
 
-        dataframe['close_ok'] = (
-            (dataframe['ema60'] > dataframe['close_pr1'])
-            &
-            (dataframe['pivot'] > dataframe['ema60'])
-            &
-	    (dataframe['rS1'] > dataframe['ema60'])
-	    &
-            (dataframe['ema5'] > dataframe['ema10'])
-            &
-            (qtpylib.crossed_above(dataframe['ema5'], dataframe['rS1']))
-	).astype('int')
+        # # Stiamo Salendo
+        # (dataframe['close_pr1'] > dataframe['pivot']) &
+        # #(dataframe['close'] > dataframe['ema220']) &
+        # (dataframe['ema60'] > dataframe['ema220']) &
+        # #(dataframe['pivot'] > dataframe['ema60']) & #Per ora lasciamo ?!
+        # # (dataframe['ema60'] > dataframe['pivot']) &
+        # # Catch The Pump!
+        # #(dataframe['ema10'] > dataframe['ema60']) &
+        #
+        # # (dataframe['open'] > dataframe['close_pr1'])
+        # # |
+        # #(dataframe['close'] >= dataframe['pivot'])
+        # #&
+        # #(dataframe['ema5'] > dataframe['ema10']) &
+        # # qtpylib.crossed_above(dataframe['ema5'] , dataframe['close_pr1'])
+        # # |
+        # qtpylib.crossed_above(dataframe['ema10'], dataframe['rS1'])
+        # #(dataframe['ema10'] >= dataframe['rS1'])
  
         dataframe['trending_over'] = (
                 (
-                    (dataframe['close'] > dataframe['r1'])
+                    (dataframe['ema10'] > dataframe['ema5'])
                 )
                 |
                 (
-                    (dataframe['close'] > dataframe['high_pr1'])
+                    (dataframe['ema10'] = dataframe['ema5'])
                 )#Time for some protections... Btc Or Fake BReak!
                 |
                 (
@@ -189,4 +177,3 @@ class hdGen(IStrategy):
                 (dataframe['trending_over'] > 0)
             ), 'sell'] = 1
         return dataframe
-
