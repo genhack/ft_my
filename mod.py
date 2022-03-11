@@ -138,7 +138,7 @@ class hdGen(IStrategy):
                 (dataframe['ema60'] < dataframe['high_pr1'])
                 &
                 (qtpylib.crossed_above(dataframe['rsi'] , params['buy-rsi'])
-                 ).astype('int')
+        ).astype('int')
 
 
             # # Stiamo Salendo
