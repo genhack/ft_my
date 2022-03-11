@@ -93,7 +93,7 @@ class hdGen(IStrategy):
         dataframe['rS1'] = pp['rS1']
         dataframe['sR1'] = pp['sR1']
 	dataframe['tp'] = pp['tp']
-
+	
         # Definiamo H e C giorno prima
         dataframe['close_pr1'] = dataframe1d['close']
         dataframe['high_pr1'] = dataframe1d['high']
