@@ -113,7 +113,7 @@ class hdGen(IStrategy):
 		&
 		(dataframe['volume'] > dataframe['volume'].shift(2))
 		&
-		(dataframe['ema60'] < dataframe['high_pr1']
+		(dataframe['ema60'] < dataframe['high_pr1'])
 	).astype('int')
 
         # # Stiamo Salendo
