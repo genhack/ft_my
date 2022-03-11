@@ -107,12 +107,10 @@ class hdGen(IStrategy):
         # Start Trading
 
         dataframe['pivots_ok'] = (
-                (dataframe['close'] > dataframe['close_pr1'])
+                (dataframe['close'] > dataframe['high_pr1'])
                 &
-	            (dataframe['ema60'] > dataframe['sR1'])
-	            &
-	            (dataframe['close'] > dataframe['close'])
-	            &
+	        (dataframe['ema60'] > dataframe['sR1'])
+	        &
                 (dataframe['ema5'] > dataframe['ema10'])
                 &
                 (qtpylib.crossed_above(dataframe['ema5'], dataframe['rS1']))
