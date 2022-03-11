@@ -162,8 +162,6 @@ class hdGen(IStrategy):
         dataframe.loc[
             (
                 (dataframe['pivots_ok'] > 0)
-		|
-		(dataframe['close_ok'] > 0)
             ), 'buy'] = 1
         return dataframe
 
