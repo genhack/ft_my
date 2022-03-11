@@ -78,7 +78,8 @@ class hdGen(IStrategy):
 		    },
 		"RSI": {
                 'atr': {'color': 'blue'},
-        }
+		},
+	}
     }
 
     def informative_pairs(self):
