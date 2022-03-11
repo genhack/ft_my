@@ -141,10 +141,6 @@ class hdGen(IStrategy):
                 )
                 |
                 (
-                    (dataframe['ema10'] == dataframe['ema5'])
-                )#Time for some protections... Btc Or Fake BReak!
-                |
-                (
                     qtpylib.crossed_above(dataframe['ema60'], dataframe['ema5'])
                 )
                 |
